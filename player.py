@@ -30,7 +30,7 @@ class Player:
                 # exit piece selection
                 piece_selection_ongoing = False
             # if the piece at the selected coordinate is owned by the player
-            elif board.get_board()[y][x].player_white == player_white:
+            elif board.get_board()[y][x] != None and board.get_board()[y][x].get_player() == player_white:
                 # select the piece
                 selected_coords = (x,y)
                 selected_piece = board.get_board()[y][x]
