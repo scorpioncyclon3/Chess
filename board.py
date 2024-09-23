@@ -1,6 +1,8 @@
 from Piece_Objects.rook import Rook
 from Piece_Objects.bishop import Bishop
 from Piece_Objects.queen import Queen
+from Piece_Objects.king import King
+from Piece_Objects.knight import Knight
 
 class Board:
     board: list[list[object]]
@@ -22,6 +24,12 @@ class Board:
         self.add_piece(Bishop(player_white=True), 5, 7)
         self.add_piece(Queen(player_white=False), 3, 0)
         self.add_piece(Queen(player_white=True), 3, 7)
+        self.add_piece(King(player_white=False), 4, 0)
+        self.add_piece(King(player_white=True), 4, 7)
+        self.add_piece(Knight(player_white=False), 1, 0)
+        self.add_piece(Knight(player_white=False), 6, 0)
+        self.add_piece(Knight(player_white=True), 1, 7)
+        self.add_piece(Knight(player_white=True), 6, 7)
 
     def get_board(self):
         return self.board
@@ -60,6 +68,12 @@ class Board:
                         # queen
                         case "<class 'Piece_Objects.queen.Queen'>":
                             row_str += "Q"
+                        # king
+                        case "<class 'Piece_Objects.king.King'>":
+                            row_str += "K"
+                        # knight
+                        case "<class 'Piece_Objects.knight.Knight'>":
+                            row_str += "N"
             print(row_str)
         print("")
 
