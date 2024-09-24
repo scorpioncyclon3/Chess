@@ -1,8 +1,9 @@
-from Piece_Objects.rook import Rook
 from Piece_Objects.bishop import Bishop
-from Piece_Objects.queen import Queen
 from Piece_Objects.king import King
 from Piece_Objects.knight import Knight
+from Piece_Objects.pawn import Pawn
+from Piece_Objects.queen import Queen
+from Piece_Objects.rook import Rook
 
 class Board:
     board: list[list[object]]
@@ -59,21 +60,24 @@ class Board:
 
                     # adds a different character for each piece type
                     match str(type(self.board[y][x])):
+                        # king
+                        case "<class 'Piece_Objects.king.King'>":
+                            row_str += "K"
+                        # queen
+                        case "<class 'Piece_Objects.queen.Queen'>":
+                            row_str += "Q"
                         # rook
                         case "<class 'Piece_Objects.rook.Rook'>":
                             row_str += "R"
                         # bishop
                         case "<class 'Piece_Objects.bishop.Bishop'>":
                             row_str += "B"
-                        # queen
-                        case "<class 'Piece_Objects.queen.Queen'>":
-                            row_str += "Q"
-                        # king
-                        case "<class 'Piece_Objects.king.King'>":
-                            row_str += "K"
                         # knight
                         case "<class 'Piece_Objects.knight.Knight'>":
                             row_str += "N"
+                        # pawn
+                        case "<class 'Piece_Objects.pawn.Pawn'>":
+                            row_str += "P"
             print(row_str)
         print("")
 
