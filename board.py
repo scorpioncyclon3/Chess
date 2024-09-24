@@ -9,28 +9,26 @@ class Board:
     board: list[list[object]]
 
     def __init__(self):
+        # create board
         self.board = []
         for i in range(0,8):
             self.board.append([])
             for j in range(0,8):
                 self.board[-1].append(None)
 
-        self.add_piece(Rook(player_white=False), 0, 0)
-        self.add_piece(Rook(player_white=False), 7, 0)
-        self.add_piece(Rook(player_white=True), 0, 7)
-        self.add_piece(Rook(player_white=True), 7, 7)
-        self.add_piece(Bishop(player_white=False), 2, 0)
-        self.add_piece(Bishop(player_white=False), 5, 0)
-        self.add_piece(Bishop(player_white=True), 2, 7)
-        self.add_piece(Bishop(player_white=True), 5, 7)
-        self.add_piece(Queen(player_white=False), 3, 0)
-        self.add_piece(Queen(player_white=True), 3, 7)
-        self.add_piece(King(player_white=False), 4, 0)
-        self.add_piece(King(player_white=True), 4, 7)
-        self.add_piece(Knight(player_white=False), 1, 0)
-        self.add_piece(Knight(player_white=False), 6, 0)
-        self.add_piece(Knight(player_white=True), 1, 7)
-        self.add_piece(Knight(player_white=True), 6, 7)
+        # fill board
+        for (player_colour, y) in ((True, 7), (False, 0)):
+            self.add_piece(King(player_white=player_colour), 4, y)
+            self.add_piece(Queen(player_white=player_colour), 3, y)
+            self.add_piece(Rook(player_white=player_colour), 0, y)
+            self.add_piece(Rook(player_white=player_colour), 7, y)
+            self.add_piece(Bishop(player_white=player_colour), 2, y)
+            self.add_piece(Bishop(player_white=player_colour), 5, y)
+            self.add_piece(Knight(player_white=player_colour), 1, y)
+            self.add_piece(Knight(player_white=player_colour), 6, y)
+        for (player_colour, y) in ((True, 6), (False, 1)):
+            for x in range(0,8):
+                self.add_piece(Pawn(player_white=player_colour), x, y)
 
     def get_board(self):
         return self.board
@@ -103,3 +101,6 @@ class Board:
                 self.board[new_y][7] = None
         elif str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.rook.Rook'>":
             self.board[new_y][new_x].prevent_castling()
+        # pawn double movement
+        elif str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.pawn.Pawn'>":
+            self.board[new_y][new_x].prevent_double_move()
