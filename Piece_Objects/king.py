@@ -23,9 +23,6 @@ class King(Limited_Movement_Piece):
         )
         self.can_castle = True
 
-    def get_can_castle(self):
-        return self.can_castle
-
     def find_available_moves(self, board, x, y):
         Limited_Movement_Piece.find_available_moves(self, board, x, y)
         # if self hasn't moved
@@ -37,10 +34,19 @@ class King(Limited_Movement_Piece):
             else:
                 row = 0
             # left rook hasn't moved
-            if board.get_board[row][0].get_can_castle():
+            if board.get_board()[row][0] != None and board.get_board()[row][0].get_can_castle():
                 # if the spaces are empty
-                available_moves.add(2, row)
+                if board.get_board()[row][1] == board.get_board()[row][2] == board.get_board()[row][3] == None:
+                    self.available_moves.add((2, row))
             # right rook hasn't moved
-            if board.get_board[row][7].get_can_castle():
+            if board.get_board()[row][7] != None and board.get_board()[row][7].get_can_castle():
                 # if the spaces are empty
-                available_moves.add(6, row)
+                if board.get_board()[row][6] == board.get_board()[row][5] == None:
+                    self.available_moves.add((6, row))
+
+
+    def get_can_castle(self):
+        return self.can_castle
+
+    def prevent_castling(self):
+        self.can_castle = False
