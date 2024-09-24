@@ -36,15 +36,15 @@ class Board:
 
     def print_state(self):
         print('Board:')
+        print("   AA BB CC DD EE FF GG HH")
         # loops through each row
         for y in range(0,8):
             # tracks the row as a string
-            row_str = ""
+            row_str = " "+str(8-y)
             # loops through
             for x in range(0,8):
                 # adds spaces between characters
-                if row_str:
-                    row_str += " "
+                row_str += " "
 
                 # for debugging
                 #print(str(type(self.board[y][x])))
@@ -80,8 +80,22 @@ class Board:
     def add_piece(self, piece, x, y):
         self.board[y][x] = piece
 
-    def move_piece(self, current_x, current_y, new_x, new_y):
+    def move_piece(self, old_x, old_y, new_x, new_y):
         # moves the piece
-        self.board[new_y][new_x] = self.board[current_y][current_x]
+        self.board[new_y][new_x] = self.board[old_y][old_x]
         # removes the old piece
-        self.board[current_y][current_x] = None
+        self.board[old_y][old_x] = None
+
+        # castling
+        if str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.king.King'>":
+            self.board[new_y][new_x].prevent_castling()
+            # castle left
+            if old_x - new_x == 2:
+                self.board[new_y][3] = self.board[new_y][0]
+                self.board[new_y][0] = None
+            # castle right
+            elif old_x - new_x == -2:
+                self.board[new_y][5] = self.board[new_y][7]
+                self.board[new_y][7] = None
+        elif str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.rook.Rook'>":
+            self.board[new_y][new_x].prevent_castling()
