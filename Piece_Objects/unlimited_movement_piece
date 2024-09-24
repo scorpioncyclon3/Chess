@@ -39,7 +39,7 @@ class Unlimited_Movement_Piece(Piece):
                         if board.get_board()[checking_y][checking_x].get_player() != self.get_player():
                             self.available_moves.add((checking_x, checking_y))
                         # stop checking this direction
-                        end_reached = False
+                        end_reached = True
                     # checking empty position
                     else:
                         self.available_moves.add((checking_x, checking_y))
