@@ -21,8 +21,20 @@ class Player:
         available_moves = set()
         piece_selection_ongoing = True
         while piece_selection_ongoing:
-            x = int(input("x coordinate: "))
-            y = int(input("y coordinate: "))
+            # TODO idiot proof the inputs
+            valid = False
+            while not valid:
+                location = input("Coordinate: ")
+                try:
+                    x = {
+                        "A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7
+                    }[location[0]]
+                    y = {
+                        "8":0,"7":1,"6":2,"5":3,"4":4,"3":5,"2":6,"1":7
+                    }[location[1]]
+                    valid = True
+                except:
+                    print("Invalid Input.")
             # if the move is available
             if (x,y) in available_moves:
                 # move the piece
