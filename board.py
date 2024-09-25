@@ -129,7 +129,7 @@ class Board:
                         if str(type(self.get_board()[y][x])) == "<class 'Piece_Objects.king.King'>":
                             black_king_pos = (x,y)
         # finds out whether either kings can be taken by a piece of the opposite colour
-        white_king_in_check, black_king_in_check = False
+        white_king_in_check, black_king_in_check = False, False
         if white_king_pos in all_available_moves_black:
             white_king_in_check = True
         if black_king_pos in all_available_moves_white:
