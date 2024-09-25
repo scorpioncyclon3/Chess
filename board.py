@@ -39,7 +39,7 @@ class Board:
         # loops through each row
         for y in range(0,8):
             # tracks the row as a string
-            row_str = " "+str(8-y)
+            row_str = "0"+str(8-y)
             # loops through
             for x in range(0,8):
                 # adds spaces between characters
@@ -104,3 +104,34 @@ class Board:
         # pawn double movement
         elif str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.pawn.Pawn'>":
             self.board[new_y][new_x].prevent_double_move()
+
+    def check_for_check(self):
+        # finds whether either player is currently in Check
+        all_available_moves_white = set()
+        all_available_moves_black = set()
+        #loops through all positions
+        for y in range(0,8):
+            for x in range(0,8):
+                # if the space is not empty, add its available moves to all_available_moves
+                if str(type(self.get_board()[y][x])) != "<class 'NoneType'>":
+                    # updates the piece's available_moves set
+                    self.get_board()[y][x].find_available_moves(self, x, y)
+                    if self.get_board()[y][x].player_white:
+                        # adds the items from the piece's available_moves set to the all_available_moves_white set
+                        all_available_moves_white.update(self.get_board()[y][x].get_available_moves())
+                        # if the piece is a king, track its position
+                        if str(type(self.get_board()[y][x])) == "<class 'Piece_Objects.king.King'>":
+                            white_king_pos = (x,y)
+                    else:
+                        # adds the items from the piece's available_moves set to the all_available_moves_black set
+                        all_available_moves_black.update(self.get_board()[y][x].get_available_moves())
+                        # if the piece is a king, track its position
+                        if str(type(self.get_board()[y][x])) == "<class 'Piece_Objects.king.King'>":
+                            black_king_pos = (x,y)
+        # finds out whether either kings can be taken by a piece of the opposite colour
+        white_king_in_check, black_king_in_check = False
+        if white_king_pos in all_available_moves_black:
+            white_king_in_check = True
+        if black_king_pos in all_available_moves_white:
+            black_king_in_check = True
+        return(white_king_in_check, black_king_in_check)
