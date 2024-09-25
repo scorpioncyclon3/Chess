@@ -48,7 +48,6 @@ class Player:
                 selected_piece = board.get_board()[y][x]
                 selected_piece.find_available_moves(board, x, y)
                 available_moves = selected_piece.get_available_moves()
-                print(available_moves)
             # illegal choice
             else:
                 print("Illegal.")
