@@ -7,6 +7,8 @@ from Piece_Objects.rook import Rook
 
 class Board:
     board: list[list[object]]
+    total_white_value: int
+    total_black_value: int
 
     def __init__(self):
         # create board
@@ -28,7 +30,10 @@ class Board:
             self.add_piece(Knight(player_white=player_colour), 6, y)
         for (player_colour, y) in ((True, 6), (False, 1)):
             for x in range(0,8):
-                self.add_piece(Pawn(player_white=player_colour), x, y)
+                pass#self.add_piece(Pawn(player_white=player_colour), x, y)
+        
+        # tracks how much value has been lost
+        self.total_white_value, self.total_black_value = 39, 39
 
     def get_board(self):
         return self.board
@@ -79,10 +84,22 @@ class Board:
             print(row_str)
         print("")
 
-    def add_piece(self, piece, x, y):
+    def add_piece(self, piece:object, x:int, y:int):
         self.board[y][x] = piece
 
-    def move_piece(self, old_x, old_y, new_x, new_y):
+    def move_piece(self, old_x:int, old_y:int, new_x:int, new_y:int, real:bool):
+        # if taking a piece
+        if self.board[new_y][new_x] != None:
+            # adds the value of it t the total
+            if self.board[new_y][new_x].get_player():
+                self.total_white_value -= self.board[new_y][new_x].get_value()
+                if real:
+                    print("Total white value remaining ", self.total_white_value)
+            else:
+                self.total_black_value -= self.board[new_y][new_x].get_value()
+                if real:
+                    print("Total black value remaining ", self.total_black_value)
+
         # moves the piece
         self.board[new_y][new_x] = self.board[old_y][old_x]
         # removes the old piece
@@ -104,6 +121,7 @@ class Board:
         # pawn double movement
         elif str(type(self.get_board()[new_y][new_x])) == "<class 'Piece_Objects.pawn.Pawn'>":
             self.board[new_y][new_x].prevent_double_move()
+        self.evaluate_state(real)
 
     def check_for_check(self):
         # finds whether either player is currently in Check
@@ -135,3 +153,17 @@ class Board:
         if black_king_pos in all_available_moves_white:
             black_king_in_check = True
         return(white_king_in_check, black_king_in_check)
+
+    def evaluate_state(self, real:bool):
+        # evaluates the overall state of the board for both players
+
+        # to account for trading being favourable when up material but
+        # adverse when down material, remaining value is evaluated as a ratio
+
+        # converts ratio from opposing_piece_value : piece_value
+        # to 1 : adjusted_piece_value, where a high adjusted_piece_value
+        # is favourable
+        white_adjusted_piece_value = self.total_black_value / self.total_white_value
+        black_adjusted_piece_value = self.total_white_value / self.total_black_value
+        if real:
+            print(white_adjusted_piece_value, black_adjusted_piece_value)
