@@ -12,14 +12,19 @@ while game_running:
     # one side in check
     white_king_in_check, black_king_in_check = board.check_for_check()
     if white_king_in_check:
-        print("White king now in check.")
+        print("White king in check.")
     if black_king_in_check:
-        print("Black king now in check.")
+        print("Black king in check.")
 
     if player_1_turn:
         print("White turn.")
-        player_1.get_move_selection(board)
+        checkmate = player_1.get_move_selection(board)
     else:
         print("Black turn.")
-        player_2.get_move_selection(board)
+        checkmate = player_2.get_move_selection(board)
     player_1_turn = not player_1_turn
+    print(checkmate)
+    if checkmate:
+        print("Checkmate.")
+        print(("White" if player_1_turn else "Black") + " wins.")
+        game_running = False
