@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from Piece_Objects.bishop import Bishop
 from Piece_Objects.king import King
 from Piece_Objects.knight import Knight
@@ -9,6 +11,8 @@ class Board:
     board: list[list[object]]
     total_white_value: int
     total_black_value: int
+    all_available_moves_white: set()
+    all_available_moves_black: set()
 
     def __init__(self):
         # create board
@@ -20,6 +24,9 @@ class Board:
 
         # tracks the total value on the board
         self.total_white_value, self.total_black_value = 0, 0
+        # tracks the available moves at a given point
+        self.all_available_moves_white = set()
+        self.all_available_moves_black = set()
 
         # fill board
         for (player_colour, y) in ((True, 7), (False, 0)):
@@ -33,7 +40,7 @@ class Board:
             self.add_piece(Knight(player_white=player_colour), 6, y)
         for (player_colour, y) in ((True, 6), (False, 1)):
             for x in range(0,8):
-                pass#self.add_piece(Pawn(player_white=player_colour), x, y)
+                self.add_piece(Pawn(player_white=player_colour), x, y)
         
 
     def get_board(self):
@@ -145,8 +152,8 @@ class Board:
 
     def check_for_check(self):
         # finds whether either player is currently in Check
-        all_available_moves_white = set()
-        all_available_moves_black = set()
+        self.all_available_moves_white = set()
+        self.all_available_moves_black = set()
         #loops through all positions
         for y in range(0,8):
             for x in range(0,8):
@@ -158,7 +165,7 @@ class Board:
                     if self.get_board()[y][x].player_white:
                         # adds the items from the piece's available_moves set
                         # to the all_available_moves_white set
-                        all_available_moves_white.update(
+                        self.all_available_moves_white.update(
                             self.get_board()[y][x].get_available_moves()
                         )
                         # if the piece is a king, track its position
@@ -169,7 +176,7 @@ class Board:
                     else:
                         # adds the items from the piece's available_moves set
                         # to the all_available_moves_black set
-                        all_available_moves_black.update(
+                        self.all_available_moves_black.update(
                             self.get_board()[y][x].get_available_moves()
                         )
                         # if the piece is a king, track its position
@@ -177,14 +184,65 @@ class Board:
                             "<class 'Piece_Objects.king.King'>"
                         ):
                             black_king_pos = (x,y)
-        # finds out whether either kings can be taken by a piece of the
-        # opposite colour
-        white_king_in_check, black_king_in_check = False, False
-        if white_king_pos in all_available_moves_black:
-            white_king_in_check = True
-        if black_king_pos in all_available_moves_white:
-            black_king_in_check = True
-        return(white_king_in_check, black_king_in_check)
+        # finds out whether either kings can be taken by a piece of
+        # the opposite colour
+        return(
+            (white_king_pos in self.all_available_moves_black),
+            (black_king_pos in self.all_available_moves_white)
+        )
+
+    def remove_illegal_moves_from_set(
+        self, available_moves, player, x, y
+    ):
+        # removes illegal moves
+        to_remove = set()
+        for move in available_moves:
+            # copies the self to simulate moves with
+            board_copy = deepcopy(self)
+            # simulates the move in the copy
+            board_copy.move_piece(
+                old_x=x, old_y=y,
+                new_x=move[0], new_y=move[1],
+                real=False
+            )
+            # checks whether it moves self into check
+            white_king_in_check, black_king_in_check = board_copy.check_for_check()
+            # if it moves the player into check
+            if (player and white_king_in_check) or (not player and black_king_in_check):
+                # tracks the illegality of the move
+                to_remove.add((move[0],move[1]))
+        # removes the illegal moves
+        for move in to_remove:
+            available_moves.remove(move)
+        return available_moves
+
+    def check_for_checkmate(self, player):
+        # tracks the true set of available moves
+        true_available_moves_player = set()
+        # loops through each piece
+        for y in range(0,8):
+            for x in range(0,8):
+                # piece in location
+                if self.get_board()[y][x] != None:
+                    # gets the true set of available moves for that piece
+                    try:
+                        true_available_moves_piece = (
+                            self.remove_illegal_moves_from_set(
+                                self.get_board()[y][x].get_available_moves(),
+                                player,
+                                x, y
+                        ))
+                    except:
+                        print("Error in checking piece", x, y)
+                        true_available_moves_piece = set()
+                    # if the piece belongs to the player being checked
+                    if player == self.get_board()[y][x].get_player():
+                        true_available_moves_player = (
+                            true_available_moves_player.union(
+                                true_available_moves_piece
+                        ))
+        print(true_available_moves_player)
+        return(len(true_available_moves_player) == 0)
 
     def evaluate_state(self, real:bool):
         # evaluates the overall state of the board for both players
@@ -202,3 +260,9 @@ class Board:
         if real:
             print("White adjusted piece value ", white_adjusted_piece_value)
             print("Black adjusted piece value ", black_adjusted_piece_value)
+
+        # determines the total value of board control
+        white_board_control_value = 0
+        black_board_control_value = 0
+        #self.all_available_moves_white
+        #self.all_available_moves_black
