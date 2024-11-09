@@ -33,16 +33,31 @@ class King(Limited_Movement_Piece):
             # black player
             else:
                 row = 0
-            # left rook hasn't moved
-            if board.get_board()[row][0] != None and board.get_board()[row][0].get_can_castle():
-                # if the spaces are empty
-                if board.get_board()[row][1] == board.get_board()[row][2] == board.get_board()[row][3] == None:
-                    self.available_moves.add((2, row))
-            # right rook hasn't moved
-            if board.get_board()[row][7] != None and board.get_board()[row][7].get_can_castle():
-                # if the spaces are empty
-                if board.get_board()[row][6] == board.get_board()[row][5] == None:
-                    self.available_moves.add((6, row))
+            # left rook hasn't moved and the spaces are empty
+            if (
+                str(type(board.get_board()[row][0])) == (
+                    "<class 'Piece_Objects.rook.Rook'>")
+                and board.get_board()[row][0].get_can_castle()
+                and (
+                    board.get_board()[row][1]
+                    == board.get_board()[row][2]
+                    == board.get_board()[row][3]
+                    == None
+                )
+            ):
+                self.available_moves.add((2, row))
+            # right rook hasn't moved and the spaces are empty
+            if (
+                str(type(board.get_board()[row][7])) == (
+                    "<class 'Piece_Objects.rook.Rook'>")
+                and board.get_board()[row][7].get_can_castle()
+                and (
+                    board.get_board()[row][6]
+                    == board.get_board()[row][5]
+                    == None
+                )
+            ):
+                self.available_moves.add((6, row))
 
 
     def get_can_castle(self):
