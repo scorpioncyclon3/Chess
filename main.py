@@ -1,9 +1,10 @@
 from board import Board
-from player import Player
+from Player_Objects.player import Player
+from Player_Objects.manual_player import Manual_Player
 
 board = Board()
-player_1 = Player(player_white=True, type="manual")
-player_2 = Player(player_white=False, type="manual")
+player_1 = Manual_Player(player_white=True)
+player_2 = Manual_Player(player_white=False)
 player_1_turn = True
 
 game_running = True
@@ -18,10 +19,10 @@ while game_running:
 
     if player_1_turn:
         print("White turn.")
-        checkmate = player_1.get_move_selection(board)
+        board, checkmate = player_1.move(board)
     else:
         print("Black turn.")
-        checkmate = player_2.get_move_selection(board)
+        board, checkmate = player_2.move(board)
     player_1_turn = not player_1_turn
     print(checkmate)
     if checkmate:
