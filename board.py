@@ -157,16 +157,23 @@ class Board:
         #loops through all positions
         for y in range(0,8):
             for x in range(0,8):
-                # if the space is not empty, add its available moves to
-                # all_available_moves
-                if str(type(self.get_board()[y][x])) != "<class 'NoneType'>":
+                # if the space is not empty, add its available moves
+                # to all_available_moves
+                if (
+                    str(type(self.get_board()[y][x]))
+                    != "<class 'NoneType'>"
+                ):
                     # updates the piece's available_moves set
-                    self.get_board()[y][x].find_available_moves(self, x, y)
+                    self.get_board()[y][x].find_available_moves(
+                        self, x, y
+                    )
                     if self.get_board()[y][x].player_white:
-                        # adds the items from the piece's available_moves set
+                        # adds the moves from the piece's set
                         # to the all_available_moves_white set
                         self.all_available_moves_white.update(
-                            self.get_board()[y][x].get_available_moves()
+                            (self.get_board()[y][x]
+                                .get_available_moves()
+                            )
                         )
                         # if the piece is a king, track its position
                         if str(type(self.get_board()[y][x])) == (
@@ -174,18 +181,20 @@ class Board:
                         ):
                             white_king_pos = (x,y)
                     else:
-                        # adds the items from the piece's available_moves set
+                        # adds the moves from the piece's set
                         # to the all_available_moves_black set
                         self.all_available_moves_black.update(
-                            self.get_board()[y][x].get_available_moves()
+                            (self.get_board()[y][x]
+                                .get_available_moves()
+                            )
                         )
                         # if the piece is a king, track its position
                         if str(type(self.get_board()[y][x])) == (
                             "<class 'Piece_Objects.king.King'>"
                         ):
                             black_king_pos = (x,y)
-        # finds out whether either kings can be taken by a piece of
-        # the opposite colour
+        # finds out whether either kings can currently be taken by a
+        # piece of the opposite colour
         return(
             (white_king_pos in self.all_available_moves_black),
             (black_king_pos in self.all_available_moves_white)
@@ -206,9 +215,14 @@ class Board:
                 real=False
             )
             # checks whether it moves self into check
-            white_king_in_check, black_king_in_check = board_copy.check_for_check()
+            white_king_in_check, black_king_in_check = (
+                board_copy.check_for_check()
+            )
             # if it moves the player into check
-            if (player and white_king_in_check) or (not player and black_king_in_check):
+            if (
+                (player and white_king_in_check)
+                or (not player and black_king_in_check)
+            ):
                 # tracks the illegality of the move
                 to_remove.add((move[0],move[1]))
         # removes the illegal moves
@@ -224,11 +238,13 @@ class Board:
             for x in range(0,8):
                 # piece in location
                 if self.get_board()[y][x] != None:
-                    # gets the true set of available moves for that piece
+                    # gets the true set of available moves for it
                     try:
                         true_available_moves_piece = (
                             self.remove_illegal_moves_from_set(
-                                self.get_board()[y][x].get_available_moves(),
+                                (self.get_board()[y][x]
+                                    .get_available_moves()
+                                ),
                                 player,
                                 x, y
                         ))
@@ -241,25 +257,31 @@ class Board:
                             true_available_moves_player.union(
                                 true_available_moves_piece
                         ))
-        print(true_available_moves_player)
         return(len(true_available_moves_player) == 0)
 
     def evaluate_state(self, real:bool):
         # evaluates the overall state of the board for both players
 
-        # to account for trading being favourable when up material but
-        # adverse when down material, remaining value is evaluated as a ratio
+        # to account for trading being favourable when up material
+        # but adverse when down material, remaining value is
+        # evaluated as a ratio
 
         # converts ratio from opposing_piece_value : piece_value
-        # to 1 : adjusted_piece_value, where a high adjusted_piece_value
-        # is favourable
+        # to 1 : adjusted_piece_value, where a high
+        # adjusted_piece_value is favourable
         white_adjusted_piece_value = (
             self.total_black_value / self.total_white_value)
         black_adjusted_piece_value = (
             self.total_white_value / self.total_black_value)
         if real:
-            print("White adjusted piece value ", white_adjusted_piece_value)
-            print("Black adjusted piece value ", black_adjusted_piece_value)
+            print(
+                "White adjusted piece value ",
+                white_adjusted_piece_value
+            )
+            print(
+                "Black adjusted piece value ",
+                black_adjusted_piece_value
+            )
 
         # determines the total value of board control
         white_board_control_value = 0
