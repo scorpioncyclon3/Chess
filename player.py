@@ -14,7 +14,6 @@ class Player:
     def get_move_selection(self, board):
         # checkmate
         if board.check_for_checkmate(self.get_player()):
-            print("checkmate")
             return True
         # move selection
         match self.type:
@@ -46,13 +45,18 @@ class Player:
             if (x,y) in available_moves:
                 # move the piece
                 board.move_piece(
-                    old_x=selected_coords[0], old_y=selected_coords[1], new_x=x, new_y=y, real=True
+                    old_x=selected_coords[0], old_y=selected_coords[1],
+                    new_x=x, new_y=y, real=True
                 )
                 # exit piece selection
                 piece_selection_ongoing = False
 
-            # if the piece at the selected coordinate is owned by the player
-            elif board.get_board()[y][x] != None and board.get_board()[y][x].get_player() == player_white:
+            # if the player owns the piece at the selected coordinate
+            elif (
+                board.get_board()[y][x] != None
+                and board.get_board()[y][x].get_player()
+                == player_white
+            ):
                 # select the piece
                 selected_coords = (x,y)
                 selected_piece = board.get_board()[y][x]
