@@ -280,13 +280,13 @@ class Board:
         # but adverse when down material, remaining value is
         # evaluated as a ratio
 
-        # converts ratio from opposing_piece_value : piece_value
-        # to 1 : adjusted_piece_value, where a high
+        # converts ratio from piece_value : opposing_piece_value
+        # to adjusted_piece_value : 1, where a high
         # adjusted_piece_value is favourable
         white_adjusted_piece_value = (
-            self.total_black_value / self.total_white_value)
-        black_adjusted_piece_value = (
             self.total_white_value / self.total_black_value)
+        black_adjusted_piece_value = (
+            self.total_black_value / self.total_white_value)
         if real:
             print(
                 "White adjusted piece value ",
