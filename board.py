@@ -148,7 +148,6 @@ class Board:
             "<class 'Piece_Objects.pawn.Pawn'>"
         ):
             self.board[new_y][new_x].prevent_double_move()
-        self.evaluate_state(real)
 
     def check_for_check(self):
         # finds whether either player is currently in Check
@@ -193,12 +192,25 @@ class Board:
                             "<class 'Piece_Objects.king.King'>"
                         ):
                             black_king_pos = (x,y)
-        # finds out whether either kings can currently be taken by a
-        # piece of the opposite colour
-        return(
-            (white_king_pos in self.all_available_moves_black),
-            (black_king_pos in self.all_available_moves_white)
-        )
+
+        # finds out whether either kings can currently be taken by
+        # a piece of the opposite colour
+        # if an error occurs, their king has been taken during a
+        # checkmate simulation
+        try:
+            white_in_check = (
+                white_king_pos in self.all_available_moves_white
+            )
+        except:
+            white_in_check = True
+        try:
+            black_in_check = (
+                white_king_pos in self.all_available_moves_white
+            )
+        except:
+            black_in_check = True
+        
+        return(white_in_check, black_in_check)
 
     def remove_illegal_moves_from_set(
         self, available_moves, player, x, y
@@ -251,6 +263,8 @@ class Board:
                     except:
                         print("Error in checking piece", x, y)
                         true_available_moves_piece = set()
+                        self.print_state()
+                        {0:0}[1]
                     # if the piece belongs to the player being checked
                     if player == self.get_board()[y][x].get_player():
                         true_available_moves_player = (
@@ -288,3 +302,10 @@ class Board:
         black_board_control_value = 0
         #self.all_available_moves_white
         #self.all_available_moves_black
+        return (
+            0,
+            white_adjusted_piece_value,
+            black_adjusted_piece_value,
+            white_board_control_value,
+            black_board_control_value
+        )
