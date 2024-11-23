@@ -199,7 +199,7 @@ class Board:
         # checkmate simulation
         try:
             white_in_check = (
-                white_king_pos in self.all_available_moves_white
+                white_king_pos in self.all_available_moves_black
             )
         except:
             white_in_check = True
