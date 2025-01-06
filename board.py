@@ -41,18 +41,21 @@ class Board:
         for (player_colour, y) in ((True, 6), (False, 1)):
             for x in range(0,8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
-        
 
     def get_board(self):
         return self.board
 
     def print_state(self):
+        mode = "text"
+        mode = "icon"
         print('Board:')
-        print("   AA BB CC DD EE FF GG HH")
+        if mode == "text": print("   AA BB CC DD EE FF GG HH")
+        elif mode == "icon": print("  A B C D E F G H")
         # loops through each row
         for y in range(0,8):
             # tracks the row as a string
-            row_str = "0"+str(8-y)
+            if mode == "text": row_str = "0"+str(8-y)
+            elif mode == "icon": row_str = str(8-y)
             # loops through
             for x in range(0,8):
                 # adds spaces between characters
@@ -60,33 +63,52 @@ class Board:
 
                 # empty space
                 if str(type(self.board[y][x])) == "<class 'NoneType'>":
-                    row_str += "--"
+                    if mode == "text": row_str += "--"
+                    elif mode == "icon": row_str += "-"
                 else:
                     # adds the piece colour
-                    row_str += (
-                        "W" if self.board[y][x].player_white else "B"
-                    )
+                    if self.board[y][x].player_white:
+                        if mode == "text": piece_str = "W"
+                        elif mode == "icon": piece_str = 9811
+                    else:
+                        if mode== "text": piece_str = "B"
+                        elif mode == "icon": piece_str = 9817
 
                     # adds a different character for each piece type
                     match str(type(self.board[y][x])):
                         # king
                         case "<class 'Piece_Objects.king.King'>":
-                            row_str += "K"
+                            match mode:
+                                case "text": piece_str += "K"
+                                case "icon": piece_str += 1
                         # queen
                         case "<class 'Piece_Objects.queen.Queen'>":
-                            row_str += "Q"
+                            match mode:
+                                case "text": piece_str += "Q"
+                                case "icon": piece_str += 2
                         # rook
                         case "<class 'Piece_Objects.rook.Rook'>":
-                            row_str += "R"
+                            match mode:
+                                case "text": piece_str += "R"
+                                case "icon": piece_str += 3
                         # bishop
                         case "<class 'Piece_Objects.bishop.Bishop'>":
-                            row_str += "B"
+                            match mode:
+                                case "text": piece_str += "B"
+                                case "icon": piece_str += 4
                         # knight
                         case "<class 'Piece_Objects.knight.Knight'>":
-                            row_str += "N"
+                            match mode:
+                                case "text": piece_str += "N"
+                                case "icon": piece_str += 5
                         # pawn
                         case "<class 'Piece_Objects.pawn.Pawn'>":
-                            row_str += "P"
+                            match mode:
+                                case "text": piece_str += "P"
+                                case "icon": piece_str += 6
+                    # if in icon mode, convert from int to unicode char
+                    if mode == "icon": piece_str = chr(piece_str)
+                    row_str += piece_str
             print(row_str)
         print("")
 
