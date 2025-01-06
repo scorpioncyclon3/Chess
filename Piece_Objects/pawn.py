@@ -38,6 +38,7 @@ class Pawn(Piece):
         # piece diagonally right
         if x < 7 and board.get_board()[y+direction][x+1] != None:
             self.available_moves.add((x+1, y+direction))
+        # TODO en passant
 
     def get_can_double_move(self):
         return self.can_double_move
