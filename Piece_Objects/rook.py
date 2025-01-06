@@ -25,3 +25,6 @@ class Rook(Unlimited_Movement_Piece):
 
     def get_can_castle(self):
         return self.can_castle
+
+    def prevent_castling(self):
+        self.can_castle = False
