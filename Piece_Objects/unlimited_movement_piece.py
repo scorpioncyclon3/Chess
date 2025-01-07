@@ -49,3 +49,41 @@ class Unlimited_Movement_Piece(Piece):
                 # checking empty position
                 else:
                     self.available_moves.add((checking_x, checking_y))
+
+    def refresh_direction(self, board, x, y, direction):
+        # removes every move in the direction being refreshed
+        to_remove = set()
+        for move in self.get_available_moves():
+            # finds the difference between the move and the current location
+            difference = (
+                move[0]-x,
+                move[1]-y
+            )
+            # check if the signs match
+            difference = (
+                difference[0]*direction[0],
+                difference[1]*direction[1]
+            )
+            # if both directions are now positive, the signs must match
+            # between the direction and the difference
+            if difference[0] >= 0 and difference[1] >= 0:
+                # check if the zeroes are correct (if present)
+                if direction[0] = 0:
+                    if difference[0] != 0:
+                        # skip if the zero is incorrect
+                        continue
+                if direction[1] = 0:
+                    if difference[1] != 0:
+                        # skip if the zero is incorrect
+                        continue
+                # if the direction is diagonal (neither directions are 0),
+                # check if the absolute values are equal
+                # (since the signs are already proven to be correct)
+                if direction[0] != 0 and direction[1] != 0:
+                    if difference[0] != difference[1]:
+                        # skip if the absolute values are different
+                        continue
+                to_remove.add(move)
+
+        self.available_moves.difference_update(to_remove)
+        self.find_available_moves_in_direction(board, x, y, direction)
