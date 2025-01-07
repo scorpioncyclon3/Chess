@@ -21,25 +21,31 @@ class Unlimited_Movement_Piece(Piece):
     def find_available_moves(self, board, x, y):
         self.available_moves = set()
         for direction in self.get_directions():
-            checking_x = x
-            checking_y = y
-            end_reached = False
-            while not end_reached:
-                # checks the next position
-                checking_x += direction[0]
-                checking_y += direction[1]
-                # if at the board boundaries, stop checking this direction
-                if not 0 <= checking_x <= 7 or not 0 <= checking_y <= 7:
-                    end_reached = True
+            self.find_available_moves_in_direction(board, x, y, direction)
 
-                if not end_reached:
-                    # piece in position being checked
-                    if board.get_board()[checking_y][checking_x] != None:
-                        # piece of opposite team
-                        if board.get_board()[checking_y][checking_x].get_player() != self.get_player():
-                            self.available_moves.add((checking_x, checking_y))
-                        # stop checking this direction
-                        end_reached = True
-                    # checking empty position
-                    else:
+    def find_available_moves_in_direction(self, board, x, y, direction):
+        checking_x = x
+        checking_y = y
+        end_reached = False
+        while not end_reached:
+            # checks the next position
+            checking_x += direction[0]
+            checking_y += direction[1]
+            # if at the board boundaries, stop checking this direction
+            if not 0 <= checking_x <= 7 or not 0 <= checking_y <= 7:
+                end_reached = True
+
+            if not end_reached:
+                # piece in position being checked
+                if board.get_board()[checking_y][checking_x] is not None:
+                    # piece of opposite team
+                    if (
+                        board.get_board()[checking_y][checking_x].get_player()
+                        != self.get_player()
+                    ):
                         self.available_moves.add((checking_x, checking_y))
+                    # stop checking this direction
+                    end_reached = True
+                # checking empty position
+                else:
+                    self.available_moves.add((checking_x, checking_y))
