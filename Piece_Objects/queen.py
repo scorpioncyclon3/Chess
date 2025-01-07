@@ -9,13 +9,13 @@ class Queen(Unlimited_Movement_Piece):
     player_white: bool
     value: int
     available_moves: set[tuple[int, int]]
-    # unlimited movement piece attributes
-    direction = tuple[tuple[int, int]]
 
     def __init__(self, player_white):
         Unlimited_Movement_Piece.__init__(
             self,
             player_white,
-            value=9,
-            directions=((0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1))
+            value=9
         )
+
+    def get_directions(self):
+        return((0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1))
