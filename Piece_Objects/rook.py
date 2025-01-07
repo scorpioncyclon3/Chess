@@ -9,19 +9,19 @@ class Rook(Unlimited_Movement_Piece):
     player_white: bool
     value: int
     available_moves: set[tuple[int, int]]
-    # unlimited movement piece attributes
-    direction = tuple[tuple[int, int]]
     # unique attributes
-    can_castle = True
+    can_castle: bool
 
     def __init__(self, player_white):
         Unlimited_Movement_Piece.__init__(
             self,
             player_white,
-            value=5,
-            directions=((0,-1), (1,0), (0,1), (-1,0))
+            value=5
         )
         self.can_castle = True
+
+    def get_directions(self):
+        return((0,-1), (1,0), (0,1), (-1,0))
 
     def get_can_castle(self):
         return self.can_castle
