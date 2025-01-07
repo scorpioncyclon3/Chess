@@ -170,6 +170,59 @@ class Board:
             "<class 'Piece_Objects.pawn.Pawn'>"
         ):
             self.board[new_y][new_x].prevent_double_move()
+        
+        # refreshes the available moves of potentially impacted pieces
+        self.refresh_affected_pieces(old_x, old_y)
+        self.refresh_affected_pieces(new_x, new_y)
+
+    def refresh_affected_pieces(self, x, y):
+        # refreshes the available moves set for any pieces that could be
+        # affected by a specific move
+
+        # refreshes moves in a star pattern (accounts for every potentially
+        # piece except for knights)
+        for direction in (
+            (0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)
+        ):
+            checking_x = x
+            checking_y = y
+            end_reached = False
+            while not end_reached:
+                # checks the next position
+                checking_x += direction[0]
+                checking_y += direction[1]
+                # if at the board boundaries, stop checking this direction
+                if not 0 <= checking_x <= 7 or not 0 <= checking_y <= 7:
+                    end_reached = True
+
+                if not end_reached:
+                    # piece in position being checked
+                    if self.get_board()[checking_y][checking_x] is not None:
+                        piece = self.get_board()[checking_y][checking_x]
+                        # refreshes pieces that could be affected
+                        if isinstance(piece, (Queen, Rook, Bishop)):
+                            # if the target piece can move in the direction of
+                            # the currently moving piece
+                            if direction in piece.get_directions():
+                                # refreshes the available_moves set in the
+                                # direction of the currently moving piece
+                                piece.refresh_direction(
+                                    self, checking_x*-1, checking_y*-1)
+                        elif isinstance(piece, King):
+                            # if the king is within a tile of the moving piece
+                            if (
+                                (1 >= x-checking_x >= -1)
+                                and (1 >= y-checking_y >= -1)
+                            ):
+                                piece.refresh_direction(
+                                    self, checking_x*-1, checking_y*-1)
+                        elif isinstance(piece, Pawn):
+                            pass
+                            # TODO
+                        # stop checking this direction
+                        end_reached = True
+
+        # refreshes potential knight moves
 
     def check_for_check(self):
         # finds whether either player is currently in Check
@@ -286,6 +339,7 @@ class Board:
                         print("Error in checking piece", x, y)
                         true_available_moves_piece = set()
                         self.print_state()
+                        # crashes self so that error-causing board states can be identified
                         {0:0}[1]
                     # if the piece belongs to the player being checked
                     if player == self.get_board()[y][x].get_player():
