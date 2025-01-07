@@ -2,8 +2,8 @@ from Piece_Objects.piece import Piece
 
 """
 Pieces that can move an unlimited distance (Rooks, Bishops, and Queens).
-The directions tuple should contain tuples of x and y coordinates,
-starting north and rotating clockwise.
+The get_directions() function should return a tuple specific to the piece-type
+containing tuples of x and y coordinates, starting north and rotating clockwise.
 """
 
 class Unlimited_Movement_Piece(Piece):
@@ -11,16 +11,16 @@ class Unlimited_Movement_Piece(Piece):
     player_white: bool
     value: int
     available_moves: set[tuple[int, int]]
-    # unique attributes
-    direction = tuple[tuple[int, int]]
 
-    def __init__(self, player_white, value, directions):
+    def __init__(self, player_white, value):
         Piece.__init__(self, player_white, value)
-        self.directions = directions
+
+    def get_directions(self):
+        return(())
 
     def find_available_moves(self, board, x, y):
         self.available_moves = set()
-        for direction in self.directions:
+        for direction in self.get_directions():
             checking_x = x
             checking_y = y
             end_reached = False
