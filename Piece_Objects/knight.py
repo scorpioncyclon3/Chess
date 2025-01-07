@@ -9,13 +9,13 @@ class Knight(Limited_Movement_Piece):
     player_white: bool
     value: int
     available_moves: set[tuple[int, int]]
-    # limited movement piece attributes
-    direction = tuple[tuple[int, int]]
 
     def __init__(self, player_white):
         Limited_Movement_Piece.__init__(
             self,
             player_white,
-            value=3,
-            directions=((1,-2), (2,-1), (2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2))
+            value=3
         )
+
+    def get_directions(self):
+        return((1,-2), (2,-1), (2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2))
