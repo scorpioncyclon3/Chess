@@ -12,7 +12,7 @@ class Limited_Movement_Piece(Piece):
     value: int
     available_moves: set[tuple[int, int]]
 
-    def __init__(self, player_white, value, directions):
+    def __init__(self, player_white, value):
         Piece.__init__(self, player_white, value)
 
     def get_directions(self):
