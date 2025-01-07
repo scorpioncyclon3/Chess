@@ -10,7 +10,7 @@ class King(Limited_Movement_Piece):
     value: int
     available_moves: set[tuple[int, int]]
     # unique attributes
-    can_castle = True
+    can_castle: bool
 
     def __init__(self, player_white):
         Limited_Movement_Piece.__init__(
