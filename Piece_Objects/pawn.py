@@ -10,7 +10,7 @@ class Pawn(Piece):
     value: int
     available_moves: set[tuple[int, int]]
     # unique attributes
-    can_double_move = True
+    can_double_move: bool
 
     def __init__(self, player_white):
         Piece.__init__(
@@ -20,12 +20,12 @@ class Pawn(Piece):
         )
         self.can_double_move = True
 
+    def get_directions(self):
+        return (-1 if self.get_player() else 1)
+
     def find_available_moves(self, board, x, y):
         self.available_moves = set()
-        if self.get_player():
-            direction = -1
-        else:
-            direction = 1
+        direction = self.get_directions()
         # movement forwards
         if board.get_board()[y+direction][x] == None:
             self.available_moves.add((x, y+direction))
