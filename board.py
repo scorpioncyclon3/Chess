@@ -147,6 +147,8 @@ class Board:
         self.board[new_y][new_x] = self.board[old_y][old_x]
         # removes the old piece
         self.board[old_y][old_x] = None
+        # refreshes the piece's available_moves set
+        self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
 
         # castling
         if str(type(self.get_board()[new_y][new_x])) == (
@@ -207,7 +209,11 @@ class Board:
                                 # refreshes the available_moves set in the
                                 # direction of the currently moving piece
                                 piece.refresh_direction(
-                                    self, checking_x*-1, checking_y*-1)
+                                    self,
+                                    checking_x*-1,
+                                    checking_y*-1,
+                                    direction
+                                )
                         elif isinstance(piece, King):
                             # if the king is within a tile of the moving piece
                             if (
@@ -215,14 +221,19 @@ class Board:
                                 and (1 >= y-checking_y >= -1)
                             ):
                                 piece.refresh_direction(
-                                    self, checking_x*-1, checking_y*-1)
+                                    self,
+                                    checking_x*-1,
+                                    checking_y*-1,
+                                    direction
+                                )
                         elif isinstance(piece, Pawn):
                             pass
-                            # TODO
+                            # TODO add
                         # stop checking this direction
                         end_reached = True
 
         # refreshes potential knight moves
+        # TODO add
 
     def check_for_check(self):
         # finds whether either player is currently in Check
