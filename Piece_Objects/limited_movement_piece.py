@@ -15,7 +15,8 @@ class Limited_Movement_Piece(Piece):
     def __init__(self, player_white, value):
         Piece.__init__(self, player_white, value)
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return(())
 
     def find_available_moves(self, board, x, y):
@@ -39,3 +40,9 @@ class Limited_Movement_Piece(Piece):
             # checking empty position
             else:
                 self.available_moves.add((checking_x, checking_y))
+
+    def refresh_direction(self, board, x, y, direction):
+        if (x+direction[0], y+direction[1]) in self.get_available_moves():
+            self.available_moves.remove((x+direction[0], y+direction[1]))
+        self.find_available_moves_in_direction(board, x, y, direction)
+        # TODO make work with castling
