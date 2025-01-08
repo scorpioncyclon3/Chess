@@ -15,7 +15,8 @@ class Unlimited_Movement_Piece(Piece):
     def __init__(self, player_white, value):
         Piece.__init__(self, player_white, value)
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return(())
 
     def find_available_moves(self, board, x, y):
@@ -87,3 +88,4 @@ class Unlimited_Movement_Piece(Piece):
 
         self.available_moves.difference_update(to_remove)
         self.find_available_moves_in_direction(board, x, y, direction)
+        #TODO castling
