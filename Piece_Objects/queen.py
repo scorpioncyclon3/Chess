@@ -17,5 +17,6 @@ class Queen(Unlimited_Movement_Piece):
             value=9
         )
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return((0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1))
