@@ -40,9 +40,9 @@ class King(Limited_Movement_Piece):
                 and board.get_board()[row][0].get_can_castle()
                 and (
                     board.get_board()[row][1]
-                    == board.get_board()[row][2]
-                    == board.get_board()[row][3]
-                    == None
+                    is board.get_board()[row][2]
+                    is board.get_board()[row][3]
+                    is None
                 )
             ):
                 self.available_moves.add((2, row))
@@ -53,8 +53,8 @@ class King(Limited_Movement_Piece):
                 and board.get_board()[row][7].get_can_castle()
                 and (
                     board.get_board()[row][6]
-                    == board.get_board()[row][5]
-                    == None
+                    is board.get_board()[row][5]
+                    is None
                 )
             ):
                 self.available_moves.add((6, row))
