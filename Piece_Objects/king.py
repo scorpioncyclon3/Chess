@@ -20,7 +20,8 @@ class King(Limited_Movement_Piece):
         )
         self.can_castle = True
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return((0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1))
 
     def find_available_moves(self, board, x, y):
