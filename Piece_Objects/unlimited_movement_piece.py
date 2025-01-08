@@ -68,11 +68,11 @@ class Unlimited_Movement_Piece(Piece):
             # between the direction and the difference
             if difference[0] >= 0 and difference[1] >= 0:
                 # check if the zeroes are correct (if present)
-                if direction[0] = 0:
+                if direction[0] == 0:
                     if difference[0] != 0:
                         # skip if the zero is incorrect
                         continue
-                if direction[1] = 0:
+                if direction[1] == 0:
                     if difference[1] != 0:
                         # skip if the zero is incorrect
                         continue
