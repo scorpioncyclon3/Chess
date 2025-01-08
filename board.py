@@ -42,6 +42,19 @@ class Board:
             for x in range(0,8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
 
+        #loops through all positions to find the available moves for all pieces
+        for y in range(0,8):
+            for x in range(0,8):
+                # if the space is not empty, fill its available moves set
+                if (
+                    str(type(self.get_board()[y][x]))
+                    != "<class 'NoneType'>"
+                ):
+                    # updates the piece's available_moves set
+                    self.get_board()[y][x].find_available_moves(
+                        self, x, y
+                    )
+
     def get_board(self):
         return self.board
 
@@ -249,9 +262,9 @@ class Board:
                     != "<class 'NoneType'>"
                 ):
                     # updates the piece's available_moves set
-                    self.get_board()[y][x].find_available_moves(
+                    """self.get_board()[y][x].find_available_moves(
                         self, x, y
-                    )
+                    )"""
                     if self.get_board()[y][x].player_white:
                         # adds the moves from the piece's set
                         # to the all_available_moves_white set
