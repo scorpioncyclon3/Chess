@@ -27,16 +27,16 @@ class Pawn(Piece):
         self.available_moves = set()
         direction = self.get_directions()
         # movement forwards
-        if board.get_board()[y+direction][x] == None:
+        if board.get_board()[y+direction][x] is not None:
             self.available_moves.add((x, y+direction))
             # double movement forwards
-            if self.get_can_double_move() and board.get_board()[y+(direction*2)][x] == None:
+            if self.get_can_double_move() and board.get_board()[y+(direction*2)][x] is None:
                 self.available_moves.add((x, y+(direction*2)))
         # piece diagonally left
-        if x > 0 and board.get_board()[y+direction][x-1] != None:
+        if x > 0 and board.get_board()[y+direction][x-1] is not None:
             self.available_moves.add((x-1, y+direction))
         # piece diagonally right
-        if x < 7 and board.get_board()[y+direction][x+1] != None:
+        if x < 7 and board.get_board()[y+direction][x+1] is not None:
             self.available_moves.add((x+1, y+direction))
         # TODO en passant
 
