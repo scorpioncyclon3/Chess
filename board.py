@@ -160,7 +160,7 @@ class Board:
         self.board[new_y][new_x] = self.board[old_y][old_x]
         # removes the old piece
         self.board[old_y][old_x] = None
-        # refreshes the piece's available_moves set
+        # resets the piece's available_moves set
         self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
 
         # castling
@@ -240,8 +240,26 @@ class Board:
                                     direction
                                 )
                         elif isinstance(piece, Pawn):
-                            pass
-                            # TODO add
+                            # if the pawn is in range and moving in the
+                            # correct direciton
+                            if (
+                                # if it is a white pawn, only reset the
+                                # available_moves set if the moving piece is
+                                # in the same row or one greater
+                                piece.get_player() and (
+                                    checking_y == y
+                                    or checking_y == y+1
+                                )
+                            ) or (
+                                # if it is a black pawn, only reset the
+                                # available_moves set if the moving piece is
+                                # in the same row or one lesser
+                                not piece.get_player() and (
+                                    checking_y == y
+                                    or checking_y == y-1
+                                )
+                            ):
+                                piece.find_available_moves(self, checking_x, checking_y)
                         # stop checking this direction
                         end_reached = True
 
