@@ -98,7 +98,8 @@ class Minimax_AI_Player(Player):
                             )
         # removes all error-causing board states
         evaluations = list(filter(
-            lambda i: (i[0] != "Error")
+            lambda i: (i[0] != "Error"),
+            evaluations
         ))
         # shuffles the list in case of a tie
         random.shuffle(evaluations)
