@@ -88,4 +88,3 @@ class Unlimited_Movement_Piece(Piece):
 
         self.available_moves.difference_update(to_remove)
         self.find_available_moves_in_direction(board, x, y, direction)
-        #TODO castling
