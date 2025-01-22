@@ -70,6 +70,15 @@ class King(Limited_Movement_Piece):
                 ):
                     self.available_moves.add((6, row))
 
+    def refresh_direction(self, board, x, y, direction):
+        # removes every move in the direction being refreshed
+        if (x+direction[0], y+direction[1]) in self.get_available_moves():
+            self.available_moves.remove((x+direction[0], y+direction[1]))
+        # removes castling moves in the direction being refreshed
+        if (x+(direction[0]*2), y+direction[1]) in self.get_available_moves():
+            self.available_moves.remove((x+(direction[0]*2), y+direction[1]))
+        self.find_available_moves_in_direction(board, x, y, direction)
+
     def get_can_castle(self):
         return self.can_castle
 
