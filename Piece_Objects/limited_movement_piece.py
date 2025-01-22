@@ -45,4 +45,3 @@ class Limited_Movement_Piece(Piece):
         if (x+direction[0], y+direction[1]) in self.get_available_moves():
             self.available_moves.remove((x+direction[0], y+direction[1]))
         self.find_available_moves_in_direction(board, x, y, direction)
-        # TODO make work with castling
