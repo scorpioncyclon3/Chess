@@ -42,7 +42,7 @@ class Board:
             for x in range(0,8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
 
-        #loops through all positions to find the available moves for all pieces
+        # loops through all positions to find the available moves for all pieces
         for y in range(0,8):
             for x in range(0,8):
                 # if the space is not empty, fill its available moves set
@@ -196,9 +196,7 @@ class Board:
 
         # refreshes moves in a star pattern (accounts for every potentially
         # piece except for knights)
-        for direction in (
-            (0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1)
-        ):
+        for direction in Queen.get_directions():
             checking_x = x
             checking_y = y
             end_reached = False
@@ -223,9 +221,9 @@ class Board:
                                 # direction of the currently moving piece
                                 piece.refresh_direction(
                                     self,
-                                    checking_x*-1,
-                                    checking_y*-1,
-                                    direction
+                                    checking_x,
+                                    checking_y,
+                                    (direction[0]*-1, direction[1]*-1)
                                 )
                         elif isinstance(piece, King):
                             # if the king is within a tile of the moving piece
@@ -235,14 +233,14 @@ class Board:
                             ):
                                 piece.refresh_direction(
                                     self,
-                                    checking_x*-1,
-                                    checking_y*-1,
-                                    direction
+                                    checking_x,
+                                    checking_y,
+                                    (direction[0]*-1, direction[1]*-1)
                                 )
                         elif isinstance(piece, Pawn):
                             # if the pawn is in range and moving in the
                             # correct direciton
-                            if (
+                            if ((
                                 # if it is a white pawn, only reset the
                                 # available_moves set if the moving piece is
                                 # in the same row or one greater
@@ -258,13 +256,28 @@ class Board:
                                     checking_y == y
                                     or checking_y == y-1
                                 )
-                            ):
-                                piece.find_available_moves(self, checking_x, checking_y)
+                            )):
+                                piece.find_available_moves(
+                                    self, checking_x, checking_y
+                                )
                         # stop checking this direction
                         end_reached = True
 
         # refreshes potential knight moves
-        # TODO add
+        for direction in Knight.get_directions():
+            checking_x = x + direction[0]
+            checking_y = y + direction[1]
+            # if inside the board
+            if 0 <= checking_x <= 7 and 0 <= checking_y <= 7:
+                piece = self.get_board()[checking_y][checking_x]
+                # knight in position being checked
+                if isinstance(piece, Knight):
+                    piece.refresh_direction(
+                        self,
+                        checking_x,
+                        checking_y,
+                        (direction[0]*-1, direction[1]*-1)
+                    )
 
     def check_for_check(self):
         # finds whether either player is currently in Check
@@ -381,7 +394,8 @@ class Board:
                         print("Error in checking piece", x, y)
                         true_available_moves_piece = set()
                         self.print_state()
-                        # crashes self so that error-causing board states can be identified
+                        # crashes self so that error-causing board states can
+                        # be identified and fixed
                         {0:0}[1]
                     # if the piece belongs to the player being checked
                     if player == self.get_board()[y][x].get_player():
