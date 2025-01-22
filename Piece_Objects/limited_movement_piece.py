@@ -42,6 +42,7 @@ class Limited_Movement_Piece(Piece):
                 self.available_moves.add((checking_x, checking_y))
 
     def refresh_direction(self, board, x, y, direction):
+        # removes every move in the direction being refreshed
         if (x+direction[0], y+direction[1]) in self.get_available_moves():
             self.available_moves.remove((x+direction[0], y+direction[1]))
         self.find_available_moves_in_direction(board, x, y, direction)
