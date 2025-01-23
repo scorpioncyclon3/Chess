@@ -46,10 +46,7 @@ class Board:
         for y in range(0,8):
             for x in range(0,8):
                 # if the space is not empty, fill its available moves set
-                if (
-                    str(type(self.get_board()[y][x]))
-                    != "<class 'NoneType'>"
-                ):
+                if self.get_board()[y][x] is not None:
                     # updates the piece's available_moves set
                     self.get_board()[y][x].find_available_moves(
                         self, x, y
@@ -75,7 +72,7 @@ class Board:
                 row_str += " "
 
                 # empty space
-                if str(type(self.board[y][x])) == "<class 'NoneType'>":
+                if self.board[y][x] is None:
                     if mode == "text": row_str += "--"
                     elif mode == "icon": row_str += "-"
                 else:
@@ -127,7 +124,7 @@ class Board:
 
     def add_piece(self, piece:object, x:int, y:int):
         # adds the piece value to the total if it isn't a king
-        if str(type(piece)) != "<class 'Piece_Objects.king.King'>":
+        if isinstance(piece, King):
             if piece.player_white:
                 self.total_white_value += piece.value
             else:
@@ -164,9 +161,7 @@ class Board:
         self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
 
         # castling
-        if str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.king.King'>"
-        ):
+        if isinstance(self.get_board()[new_y][new_x], King):
             self.board[new_y][new_x].prevent_castling()
             # castle left
             if old_x - new_x == 2:
@@ -176,15 +171,13 @@ class Board:
             elif old_x - new_x == -2:
                 self.board[new_y][5] = self.board[new_y][7]
                 self.board[new_y][7] = None
-        elif str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.rook.Rook'>"
-        ):
+        elif isinstance(self.get_board()[new_y][new_x]), Rook:
             self.board[new_y][new_x].prevent_castling()
-        # pawn double movement
-        elif str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.pawn.Pawn'>"
-        ):
+        # pawn double movement & promotion
+        elif isinstance(self.get_board()[new_y][new_x], Pawn):
             self.board[new_y][new_x].prevent_double_move()
+            # TODO promotion
+
         
         # refreshes the available moves of potentially impacted pieces
         self.refresh_affected_pieces(old_x, old_y)
@@ -288,10 +281,7 @@ class Board:
             for x in range(0,8):
                 # if the space is not empty, add its available moves
                 # to all_available_moves
-                if (
-                    str(type(self.get_board()[y][x]))
-                    != "<class 'NoneType'>"
-                ):
+                if self.get_board()[y][x] is not None:
                     # updates the piece's available_moves set
                     """self.get_board()[y][x].find_available_moves(
                         self, x, y
@@ -305,9 +295,7 @@ class Board:
                             )
                         )
                         # if the piece is a king, track its position
-                        if str(type(self.get_board()[y][x])) == (
-                            "<class 'Piece_Objects.king.King'>"
-                        ):
+                        if isinstance(self.get_board()[y][x], King):
                             white_king_pos = (x,y)
                     else:
                         # adds the moves from the piece's set
@@ -318,9 +306,7 @@ class Board:
                             )
                         )
                         # if the piece is a king, track its position
-                        if str(type(self.get_board()[y][x])) == (
-                            "<class 'Piece_Objects.king.King'>"
-                        ):
+                        if isinstance(self.get_board()[y][x], King):
                             black_king_pos = (x,y)
 
         # finds out whether either kings can currently be taken by
