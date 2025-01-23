@@ -160,6 +160,7 @@ class Board:
         # resets the piece's available_moves set
         self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
 
+        # edge case movements
         # castling
         if isinstance(self.get_board()[new_y][new_x], King):
             self.board[new_y][new_x].prevent_castling()
@@ -189,8 +190,7 @@ class Board:
                 self.total_black_value -= 1
                 # adds a black queen in it's place
                 self.add_piece(Queen(False), new_x, new_y)
-                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)# TODO FIX THIS, OUTDATED PAWN MOVES MAY EXIST
-
+                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
         
         # refreshes the available moves of potentially impacted pieces
         self.refresh_affected_pieces(old_x, old_y)
@@ -396,12 +396,14 @@ class Board:
         # and filled sets are True
         return(not true_available_moves_player)
 
+    # TODO add stalemates
+
     def evaluate_state(self, real:bool):
         # evaluates the overall state of the board for both players
 
-        # to account for trading being favourable when up material
-        # but adverse when down material, remaining value is
-        # evaluated as a ratio
+        # to account for trading being relatively equal for both players,
+        # but slightly favourable when up material and slightly adverse when
+        # down material, remaining value is evaluated as a ratio
 
         # converts ratio from piece_value : opposing_piece_value
         # to adjusted_piece_value : 1, where a high
@@ -426,7 +428,10 @@ class Board:
         #self.all_available_moves_white
         #self.all_available_moves_black
         return (
+            # tracks if a board state is winning
+            # (1 is a white win, -1 is a black win)
             0,
+            # returns the other values
             white_adjusted_piece_value,
             black_adjusted_piece_value,
             white_board_control_value,
