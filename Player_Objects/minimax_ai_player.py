@@ -22,15 +22,15 @@ class Minimax_AI_Player(Player):
             return board, True
 
         start_time = time.perf_counter()
-        results = self.cool_temp_funct_name(
+        results = self.really_cool_not_so_temporary_function_name(
             board, 0, self.get_player()
         )
         board = deepcopy(results[1])
         end_time = time.perf_counter()
         print("Time taken:", end_time - start_time)
-        return board, False
+        return board
     
-    def cool_temp_funct_name(
+    def really_cool_not_so_temporary_function_name(
         self, board, current_recursion_depth, player
     ):
         evaluations = []
@@ -84,11 +84,12 @@ class Minimax_AI_Player(Player):
                                     temp_copy
                                 )
                             )
-                        # if it is not a leaf node, recurse again
+                        # if it is not a leaf node, continue recursing
+                        # then use the selected leaf node's value
                         else:
                             evaluations.append(
                                 (
-                                    self.cool_temp_funct_name(
+                                    self.really_cool_not_so_temporary_function_name(
                                         temp_copy,
                                         current_recursion_depth+1,
                                         (not player)
@@ -96,6 +97,14 @@ class Minimax_AI_Player(Player):
                                     temp_copy
                                 )
                             )
+        # if child nodes are error-causing, print current state
+        if len(evaluations) != len(
+            list(filter(
+                lambda i: (i[0] != "Error"),
+                evaluations
+            ))
+        ):
+            board.print_state()
         # removes all error-causing board states
         evaluations = list(filter(
             lambda i: (i[0] != "Error"),
