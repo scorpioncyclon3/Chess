@@ -182,12 +182,14 @@ class Board:
                 self.total_white_value -= 1
                 # adds a white queen in it's place
                 self.add_piece(Queen(True), new_x, new_y)
+                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
             # if a black pawn reaches the bottom row
             if not self.board[new_y][new_x].get_player() and new_y == 7:
                 # removes the pawn's value from black player's total
                 self.total_black_value -= 1
                 # adds a black queen in it's place
                 self.add_piece(Queen(False), new_x, new_y)
+                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)# TODO FIX THIS, OUTDATED PAWN MOVES MAY EXIST
 
         
         # refreshes the available moves of potentially impacted pieces
@@ -293,10 +295,6 @@ class Board:
                 # if the space is not empty, add its available moves
                 # to all_available_moves
                 if self.get_board()[y][x] is not None:
-                    # updates the piece's available_moves set
-                    """self.get_board()[y][x].find_available_moves(
-                        self, x, y
-                    )"""
                     if self.get_board()[y][x].player_white:
                         # adds the moves from the piece's set
                         # to the all_available_moves_white set
