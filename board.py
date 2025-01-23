@@ -295,43 +295,37 @@ class Board:
                 # if the space is not empty, add its available moves
                 # to all_available_moves
                 if self.get_board()[y][x] is not None:
-                    if self.get_board()[y][x].player_white:
-                        # adds the moves from the piece's set
-                        # to the all_available_moves_white set
+                    piece = self.get_board()[y][x]
+                    if piece.player_white:
+                        # adds all of the moves from the piece's set
+                        # to the board's all_available_moves_white set
                         self.all_available_moves_white.update(
-                            (self.get_board()[y][x]
-                                .get_available_moves()
-                            )
+                            piece.get_available_moves()
                         )
                         # if the piece is a king, track its position
-                        if isinstance(self.get_board()[y][x], King):
+                        if isinstance(piece, King):
                             white_king_pos = (x,y)
                     else:
-                        # adds the moves from the piece's set
-                        # to the all_available_moves_black set
+                        # adds all of the moves from the piece's set
+                        # to the board's all_available_moves_black set
                         self.all_available_moves_black.update(
-                            (self.get_board()[y][x]
-                                .get_available_moves()
-                            )
+                            piece.get_available_moves()
                         )
                         # if the piece is a king, track its position
-                        if isinstance(self.get_board()[y][x], King):
+                        if isinstance(piece, King):
                             black_king_pos = (x,y)
 
         # finds out whether either kings can currently be taken by
         # a piece of the opposite colour
         # if an error occurs, their king has been taken during a
-        # checkmate simulation
+        # checkmate simulation, which is essentially equivalent to a check for
+        # the purpose of determining a checkmate
         try:
-            white_in_check = (
-                white_king_pos in self.all_available_moves_black
-            )
+            white_in_check = white_king_pos in self.all_available_moves_black
         except:
             white_in_check = True
         try:
-            black_in_check = (
-                white_king_pos in self.all_available_moves_white
-            )
+            black_in_check = white_king_pos in self.all_available_moves_white
         except:
             black_in_check = True
         
@@ -373,8 +367,11 @@ class Board:
         # loops through each piece
         for y in range(0,8):
             for x in range(0,8):
-                # piece in location
-                if self.get_board()[y][x] != None:
+                # piece owned by the player being checked in location
+                if (
+                    self.get_board()[y][x] is not None
+                    and player == self.get_board()[y][x].get_player()
+                ):
                     # gets the true set of available moves for it
                     try:
                         true_available_moves_piece = (
@@ -385,20 +382,19 @@ class Board:
                                 player,
                                 x, y
                         ))
-                    except:
-                        print("Error in checking piece", x, y)
-                        true_available_moves_piece = set()
-                        self.print_state()
-                        # crashes self so that error-causing board states can
-                        # be identified and fixed
-                        {0:0}[1]
-                    # if the piece belongs to the player being checked
-                    if player == self.get_board()[y][x].get_player():
                         true_available_moves_player = (
                             true_available_moves_player.union(
                                 true_available_moves_piece
                         ))
-        return(len(true_available_moves_player) == 0)
+                    except:
+                        print("Error in checking piece", x, y)
+                        self.print_state()
+                        # crashes self so that error-causing board states can
+                        # be identified and fixed
+                        {0:0}[1]
+        # returns False if the set is empty, since empty sets evaluate to False
+        # and filled sets are True
+        return(not true_available_moves_player)
 
     def evaluate_state(self, real:bool):
         # evaluates the overall state of the board for both players
