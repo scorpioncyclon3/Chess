@@ -166,10 +166,12 @@ class Board:
             self.board[new_y][new_x].prevent_castling()
             # castle left
             if old_x - new_x == 2:
+                # moves rook
                 self.board[new_y][3] = self.board[new_y][0]
                 self.board[new_y][0] = None
             # castle right
             elif old_x - new_x == -2:
+                # moves rook
                 self.board[new_y][5] = self.board[new_y][7]
                 self.board[new_y][7] = None
         elif isinstance(self.get_board()[new_y][new_x], Rook):
@@ -331,10 +333,10 @@ class Board:
         
         return(white_in_check, black_in_check)
 
-    def remove_illegal_moves_from_set(
-        self, available_moves, player, x, y
-    ):
-        # removes illegal moves
+    def remove_illegal_moves_from_piece_set(self, x, y):
+        # removes illegal moves from a piece's set
+        available_moves = self.get_board()[y][x].get_available_moves()
+        player = self.get_board()[y][x].get_player()
         to_remove = set()
         for move in available_moves:
             # copies the self to simulate moves with
@@ -375,13 +377,8 @@ class Board:
                     # gets the true set of available moves for it
                     try:
                         true_available_moves_piece = (
-                            self.remove_illegal_moves_from_set(
-                                (self.get_board()[y][x]
-                                    .get_available_moves()
-                                ),
-                                player,
-                                x, y
-                        ))
+                            self.remove_illegal_moves_from_piece_set(x, y)
+                        )
                         true_available_moves_player = (
                             true_available_moves_player.union(
                                 true_available_moves_piece
