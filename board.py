@@ -176,7 +176,18 @@ class Board:
         # pawn double movement & promotion
         elif isinstance(self.get_board()[new_y][new_x], Pawn):
             self.board[new_y][new_x].prevent_double_move()
-            # TODO promotion
+            # if a white pawn reaches the top row
+            if self.board[new_y][new_x].get_player_white() and new_y = 0:
+                # removes the pawn's value from white player's total
+                self.total_white_value -= 1
+                # adds a white queen in it's place
+                self.add_piece(Queen(True), new_x, new_y)
+            # if a black pawn reaches the bottom row
+            if not self.board[new_y][new_x].get_player_white() and new_y = 7:
+                # removes the pawn's value from black player's total
+                self.total_black_value -= 1
+                # adds a black queen in it's place
+                self.add_piece(Queen(False), new_x, new_y)
 
         
         # refreshes the available moves of potentially impacted pieces
