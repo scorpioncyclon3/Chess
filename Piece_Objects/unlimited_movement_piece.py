@@ -61,13 +61,9 @@ class Unlimited_Movement_Piece(Piece):
                 move[1]-y
             )
             # check if the signs match
-            difference = (
-                difference[0]*direction[0],
-                difference[1]*direction[1]
-            )
-            # if both directions are now positive, the signs must match
-            # between the direction and the difference
-            if difference[0] >= 0 and difference[1] >= 0:
+            # if both directions are positive when multiplied together, 
+            # the signs must match between the direction and the difference
+            if difference[0]*direction[0] >= 0 and difference[1]*direction[1] >= 0:
                 # check if the zeroes are correct (if present)
                 if direction[0] == 0:
                     if difference[0] != 0:
@@ -78,11 +74,15 @@ class Unlimited_Movement_Piece(Piece):
                         # skip if the zero is incorrect
                         continue
                 # if the direction is diagonal (neither directions are 0),
-                # check if the absolute values are equal
+                # check if the absolute values both equal 1
                 # (since the signs are already proven to be correct)
                 if direction[0] != 0 and direction[1] != 0:
-                    if difference[0] != difference[1]:
-                        # skip if the absolute values are different
+                    if (
+                        difference[0]*direction[0]
+                        == difference[1]*direction[1]
+                        == 1
+                    ):
+                        # skip if the absolute values aren't both 1
                         continue
                 to_remove.add(move)
 
