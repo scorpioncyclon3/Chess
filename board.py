@@ -124,7 +124,7 @@ class Board:
 
     def add_piece(self, piece:object, x:int, y:int):
         # adds the piece value to the total if it isn't a king
-        if isinstance(piece, King):
+        if not isinstance(piece, King):
             if piece.player_white:
                 self.total_white_value += piece.value
             else:
@@ -251,18 +251,20 @@ class Board:
                             if ((
                                 # if it is a white pawn, only reset the
                                 # available_moves set if the moving piece is
-                                # in the same row or one greater
+                                # in the same row, one greater, or two greater
                                 piece.get_player() and (
                                     checking_y == y
                                     or checking_y == y+1
+                                    or checking_y == y+2
                                 )
                             ) or (
                                 # if it is a black pawn, only reset the
                                 # available_moves set if the moving piece is
-                                # in the same row or one lesser
+                                # in the same row, one lesser, or two lesser
                                 not piece.get_player() and (
                                     checking_y == y
                                     or checking_y == y-1
+                                    or checking_y == y-2
                                 )
                             )):
                                 piece.find_available_moves(
@@ -361,6 +363,7 @@ class Board:
         # removes the illegal moves
         for move in to_remove:
             available_moves.remove(move)
+        if len(available_moves): print(x, y, available_moves)
         return available_moves
 
     def check_for_checkmate(self, player):
@@ -391,46 +394,47 @@ class Board:
                         {0:0}[1]
         # returns False if the set is empty, since empty sets evaluate to False
         # and filled sets are True
+        print(true_available_moves_player)
         return(not true_available_moves_player)
 
     # TODO add stalemates
 
-    def evaluate_state(self, real:bool):
-        # evaluates the overall state of the board for both players
+    def evaluate_state(self, player_white, real:bool):
+        # evaluates the overall state of the board for the focused player
+
+        # can only be called on non-checkmate nodes, so checkmate can be ignored
 
         # to account for trading being relatively equal for both players,
         # but slightly favourable when up material and slightly adverse when
-        # down material, remaining value is evaluated as a ratio
+        # down material, remaining piece value is evaluated as a ratio
 
         # converts ratio from piece_value : opposing_piece_value
-        # to adjusted_piece_value : 1, where a high
+        # to adjusted_piece_value : 10, where a high
         # adjusted_piece_value is favourable
-        white_adjusted_piece_value = (
-            self.total_white_value / self.total_black_value)
-        black_adjusted_piece_value = (
-            self.total_black_value / self.total_white_value)
-        if real:
-            print(
-                "White adjusted piece value ",
-                white_adjusted_piece_value
+        if player_white:
+            adjusted_piece_value = (
+                10 * self.total_white_value / self.total_black_value
             )
-            print(
-                "Black adjusted piece value ",
-                black_adjusted_piece_value
+            if real:
+                print(
+                    "White adjusted piece value ",
+                    adjusted_piece_value
+                )
+        else:
+            adjusted_piece_value = (
+                -10 * self.total_black_value / self.total_white_value
             )
+            if real:
+                print(
+                    "Black adjusted piece value ",
+                    adjusted_piece_value
+                )
 
         # determines the total value of board control
         white_board_control_value = 0
-        black_board_control_value = 0
+        black_board_control_value = -0
         #self.all_available_moves_white
         #self.all_available_moves_black
         return (
-            # tracks if a board state is winning
-            # (1 is a white win, -1 is a black win)
-            0,
-            # returns the other values
-            white_adjusted_piece_value,
-            black_adjusted_piece_value,
-            white_board_control_value,
-            black_board_control_value
+            adjusted_piece_value
         )
