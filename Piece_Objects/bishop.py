@@ -17,5 +17,6 @@ class Bishop(Unlimited_Movement_Piece):
             value=3
         )
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return((1,-1), (1,1), (-1,1), (-1,-1))

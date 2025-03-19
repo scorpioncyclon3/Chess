@@ -10,10 +10,6 @@ class Manual_Player(Player):
         )
 
     def move(self, board):
-        # checkmate
-        if board.check_for_checkmate(self.get_player()):
-            return board, True
-
         selected_coords = ()
         available_moves = set()
         piece_selection_ongoing = True
@@ -53,13 +49,10 @@ class Manual_Player(Player):
                 selected_piece = board.get_board()[y][x]
                 selected_piece.find_available_moves(board, x, y)
                 available_moves = selected_piece.get_available_moves()
-                available_moves = board.remove_illegal_moves_from_set(
-                    available_moves, self.get_player(), x, y)
+                available_moves = board.remove_illegal_moves_from_piece_set(x, y)
 
             # illegal choice
             else:
                 print("Illegal.")
         print()
-
-        # not a checkmate
-        return board, False
+        return board

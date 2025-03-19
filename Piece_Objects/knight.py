@@ -17,5 +17,6 @@ class Knight(Limited_Movement_Piece):
             value=3
         )
 
-    def get_directions(self):
+    @staticmethod
+    def get_directions():
         return((1,-2), (2,-1), (2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2))

@@ -22,18 +22,17 @@ class Minimax_AI_Player(Player):
             return board, True
 
         start_time = time.perf_counter()
-        results = self.cool_temp_funct_name(
+        results = self.really_cool_not_so_temporary_function_name(
             board, 0, self.get_player()
         )
         board = deepcopy(results[1])
         end_time = time.perf_counter()
         print("Time taken:", end_time - start_time)
-        return board, False
+        return board
     
-    def cool_temp_funct_name(
+    def really_cool_not_so_temporary_function_name(
         self, board, current_recursion_depth, player
     ):
-        print(current_recursion_depth)
         evaluations = []
 
         for y in range(0,8):
@@ -85,11 +84,12 @@ class Minimax_AI_Player(Player):
                                     temp_copy
                                 )
                             )
-                        # if it is not a leaf node, recurse again
+                        # if it is not a leaf node, continue recursing
+                        # then use the selected leaf node's value
                         else:
                             evaluations.append(
                                 (
-                                    self.cool_temp_funct_name(
+                                    self.really_cool_not_so_temporary_function_name(
                                         temp_copy,
                                         current_recursion_depth+1,
                                         (not player)
@@ -97,6 +97,19 @@ class Minimax_AI_Player(Player):
                                     temp_copy
                                 )
                             )
+        # if child nodes are error-causing, print current state
+        if len(evaluations) != len(
+            list(filter(
+                lambda i: (i[0] != "Error"),
+                evaluations
+            ))
+        ):
+            board.print_state()
+        # removes all error-causing board states
+        evaluations = list(filter(
+            lambda i: (i[0] != "Error"),
+            evaluations
+        ))
         # shuffles the list in case of a tie
         random.shuffle(evaluations)
         # finds the most effective move
@@ -113,5 +126,12 @@ class Minimax_AI_Player(Player):
                 key=lambda i: (i[0][0]*-1, i[0][2], i[0][4])
             )
 
-        # returns the best item
-        return evaluations[0]
+        # error protection
+        if len(evaluations):
+            # returns the best item
+            return evaluations[0]
+        else:
+            # returns an error, layer above should ignore this move
+            print("No available moves in simulation")
+            board.print_state()
+            return(("Error", board))

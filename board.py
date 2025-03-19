@@ -42,6 +42,16 @@ class Board:
             for x in range(0,8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
 
+        # loops through all positions to find the available moves for all pieces
+        for y in range(0,8):
+            for x in range(0,8):
+                # if the space is not empty, fill its available moves set
+                if self.get_board()[y][x] is not None:
+                    # updates the piece's available_moves set
+                    self.get_board()[y][x].find_available_moves(
+                        self, x, y
+                    )
+
     def get_board(self):
         return self.board
 
@@ -62,7 +72,7 @@ class Board:
                 row_str += " "
 
                 # empty space
-                if str(type(self.board[y][x])) == "<class 'NoneType'>":
+                if self.board[y][x] is None:
                     if mode == "text": row_str += "--"
                     elif mode == "icon": row_str += "-"
                 else:
@@ -114,7 +124,7 @@ class Board:
 
     def add_piece(self, piece:object, x:int, y:int):
         # adds the piece value to the total if it isn't a king
-        if str(type(piece)) != "<class 'Piece_Objects.king.King'>":
+        if not isinstance(piece, King):
             if piece.player_white:
                 self.total_white_value += piece.value
             else:
@@ -147,29 +157,137 @@ class Board:
         self.board[new_y][new_x] = self.board[old_y][old_x]
         # removes the old piece
         self.board[old_y][old_x] = None
+        # resets the piece's available_moves set
+        self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
 
+        # edge case movements
         # castling
-        if str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.king.King'>"
-        ):
+        if isinstance(self.get_board()[new_y][new_x], King):
             self.board[new_y][new_x].prevent_castling()
             # castle left
             if old_x - new_x == 2:
+                # moves rook
                 self.board[new_y][3] = self.board[new_y][0]
                 self.board[new_y][0] = None
             # castle right
             elif old_x - new_x == -2:
+                # moves rook
                 self.board[new_y][5] = self.board[new_y][7]
                 self.board[new_y][7] = None
-        elif str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.rook.Rook'>"
-        ):
+        elif isinstance(self.get_board()[new_y][new_x], Rook):
             self.board[new_y][new_x].prevent_castling()
-        # pawn double movement
-        elif str(type(self.get_board()[new_y][new_x])) == (
-            "<class 'Piece_Objects.pawn.Pawn'>"
-        ):
+        # pawn double movement & promotion
+        elif isinstance(self.get_board()[new_y][new_x], Pawn):
             self.board[new_y][new_x].prevent_double_move()
+            # if a white pawn reaches the top row
+            if self.board[new_y][new_x].get_player() and new_y == 0:
+                # removes the pawn's value from white player's total
+                self.total_white_value -= 1
+                # adds a white queen in it's place
+                self.add_piece(Queen(True), new_x, new_y)
+                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
+            # if a black pawn reaches the bottom row
+            if not self.board[new_y][new_x].get_player() and new_y == 7:
+                # removes the pawn's value from black player's total
+                self.total_black_value -= 1
+                # adds a black queen in it's place
+                self.add_piece(Queen(False), new_x, new_y)
+                self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
+        
+        # refreshes the available moves of potentially impacted pieces
+        self.refresh_affected_pieces(old_x, old_y)
+        self.refresh_affected_pieces(new_x, new_y)
+
+    def refresh_affected_pieces(self, x, y):
+        # refreshes the available moves set for any pieces that could be
+        # affected by a specific move
+
+        # refreshes moves in a star pattern (accounts for every potentially
+        # piece except for knights)
+        for direction in Queen.get_directions():
+            checking_x = x
+            checking_y = y
+            end_reached = False
+            while not end_reached:
+                # checks the next position
+                checking_x += direction[0]
+                checking_y += direction[1]
+                # if at the board boundaries, stop checking this direction
+                if not 0 <= checking_x <= 7 or not 0 <= checking_y <= 7:
+                    end_reached = True
+
+                if not end_reached:
+                    # piece in position being checked
+                    if self.get_board()[checking_y][checking_x] is not None:
+                        piece = self.get_board()[checking_y][checking_x]
+                        # refreshes pieces that could be affected
+                        if isinstance(piece, (Queen, Rook, Bishop)):
+                            # if the target piece can move in the direction of
+                            # the currently moving piece
+                            if direction in piece.get_directions():
+                                # refreshes the available_moves set in the
+                                # direction of the currently moving piece
+                                piece.refresh_direction(
+                                    self,
+                                    checking_x,
+                                    checking_y,
+                                    (direction[0]*-1, direction[1]*-1)
+                                )
+                        elif isinstance(piece, King):
+                            # if the king is within a tile of the moving piece
+                            if (
+                                (1 >= x-checking_x >= -1)
+                                and (1 >= y-checking_y >= -1)
+                            ):
+                                piece.refresh_direction(
+                                    self,
+                                    checking_x,
+                                    checking_y,
+                                    (direction[0]*-1, direction[1]*-1)
+                                )
+                        elif isinstance(piece, Pawn):
+                            # if the pawn is in range and moving in the
+                            # correct direciton
+                            if ((
+                                # if it is a white pawn, only reset the
+                                # available_moves set if the moving piece is
+                                # in the same row, one greater, or two greater
+                                piece.get_player() and (
+                                    checking_y == y
+                                    or checking_y == y+1
+                                    or checking_y == y+2
+                                )
+                            ) or (
+                                # if it is a black pawn, only reset the
+                                # available_moves set if the moving piece is
+                                # in the same row, one lesser, or two lesser
+                                not piece.get_player() and (
+                                    checking_y == y
+                                    or checking_y == y-1
+                                    or checking_y == y-2
+                                )
+                            )):
+                                piece.find_available_moves(
+                                    self, checking_x, checking_y
+                                )
+                        # stop checking this direction
+                        end_reached = True
+
+        # refreshes potential knight moves
+        for direction in Knight.get_directions():
+            checking_x = x + direction[0]
+            checking_y = y + direction[1]
+            # if inside the board
+            if 0 <= checking_x <= 7 and 0 <= checking_y <= 7:
+                piece = self.get_board()[checking_y][checking_x]
+                # knight in position being checked
+                if isinstance(piece, Knight):
+                    piece.refresh_direction(
+                        self,
+                        checking_x,
+                        checking_y,
+                        (direction[0]*-1, direction[1]*-1)
+                    )
 
     def check_for_check(self):
         # finds whether either player is currently in Check
@@ -180,64 +298,47 @@ class Board:
             for x in range(0,8):
                 # if the space is not empty, add its available moves
                 # to all_available_moves
-                if (
-                    str(type(self.get_board()[y][x]))
-                    != "<class 'NoneType'>"
-                ):
-                    # updates the piece's available_moves set
-                    self.get_board()[y][x].find_available_moves(
-                        self, x, y
-                    )
-                    if self.get_board()[y][x].player_white:
-                        # adds the moves from the piece's set
-                        # to the all_available_moves_white set
+                if self.get_board()[y][x] is not None:
+                    piece = self.get_board()[y][x]
+                    if piece.player_white:
+                        # adds all of the moves from the piece's set
+                        # to the board's all_available_moves_white set
                         self.all_available_moves_white.update(
-                            (self.get_board()[y][x]
-                                .get_available_moves()
-                            )
+                            piece.get_available_moves()
                         )
                         # if the piece is a king, track its position
-                        if str(type(self.get_board()[y][x])) == (
-                            "<class 'Piece_Objects.king.King'>"
-                        ):
+                        if isinstance(piece, King):
                             white_king_pos = (x,y)
                     else:
-                        # adds the moves from the piece's set
-                        # to the all_available_moves_black set
+                        # adds all of the moves from the piece's set
+                        # to the board's all_available_moves_black set
                         self.all_available_moves_black.update(
-                            (self.get_board()[y][x]
-                                .get_available_moves()
-                            )
+                            piece.get_available_moves()
                         )
                         # if the piece is a king, track its position
-                        if str(type(self.get_board()[y][x])) == (
-                            "<class 'Piece_Objects.king.King'>"
-                        ):
+                        if isinstance(piece, King):
                             black_king_pos = (x,y)
 
         # finds out whether either kings can currently be taken by
         # a piece of the opposite colour
         # if an error occurs, their king has been taken during a
-        # checkmate simulation
+        # checkmate simulation, which is essentially equivalent to a check for
+        # the purpose of determining a checkmate
         try:
-            white_in_check = (
-                white_king_pos in self.all_available_moves_black
-            )
+            white_in_check = white_king_pos in self.all_available_moves_black
         except:
             white_in_check = True
         try:
-            black_in_check = (
-                white_king_pos in self.all_available_moves_white
-            )
+            black_in_check = white_king_pos in self.all_available_moves_white
         except:
             black_in_check = True
         
         return(white_in_check, black_in_check)
 
-    def remove_illegal_moves_from_set(
-        self, available_moves, player, x, y
-    ):
-        # removes illegal moves
+    def remove_illegal_moves_from_piece_set(self, x, y):
+        # removes illegal moves from a piece's set
+        available_moves = self.get_board()[y][x].get_available_moves()
+        player = self.get_board()[y][x].get_player()
         to_remove = set()
         for move in available_moves:
             # copies the self to simulate moves with
@@ -262,6 +363,7 @@ class Board:
         # removes the illegal moves
         for move in to_remove:
             available_moves.remove(move)
+        if len(available_moves): print(x, y, available_moves)
         return available_moves
 
     def check_for_checkmate(self, player):
@@ -270,64 +372,69 @@ class Board:
         # loops through each piece
         for y in range(0,8):
             for x in range(0,8):
-                # piece in location
-                if self.get_board()[y][x] != None:
+                # piece owned by the player being checked in location
+                if (
+                    self.get_board()[y][x] is not None
+                    and player == self.get_board()[y][x].get_player()
+                ):
                     # gets the true set of available moves for it
                     try:
                         true_available_moves_piece = (
-                            self.remove_illegal_moves_from_set(
-                                (self.get_board()[y][x]
-                                    .get_available_moves()
-                                ),
-                                player,
-                                x, y
-                        ))
-                    except:
-                        print("Error in checking piece", x, y)
-                        true_available_moves_piece = set()
-                        self.print_state()
-                        {0:0}[1]
-                    # if the piece belongs to the player being checked
-                    if player == self.get_board()[y][x].get_player():
+                            self.remove_illegal_moves_from_piece_set(x, y)
+                        )
                         true_available_moves_player = (
                             true_available_moves_player.union(
                                 true_available_moves_piece
                         ))
-        return(len(true_available_moves_player) == 0)
+                    except:
+                        print("Error in checking piece", x, y)
+                        self.print_state()
+                        # crashes self so that error-causing board states can
+                        # be identified and fixed
+                        {0:0}[1]
+        # returns False if the set is empty, since empty sets evaluate to False
+        # and filled sets are True
+        print(true_available_moves_player)
+        return(not true_available_moves_player)
 
-    def evaluate_state(self, real:bool):
-        # evaluates the overall state of the board for both players
+    # TODO add stalemates
 
-        # to account for trading being favourable when up material
-        # but adverse when down material, remaining value is
-        # evaluated as a ratio
+    def evaluate_state(self, player_white, real:bool):
+        # evaluates the overall state of the board for the focused player
+
+        # can only be called on non-checkmate nodes, so checkmate can be ignored
+
+        # to account for trading being relatively equal for both players,
+        # but slightly favourable when up material and slightly adverse when
+        # down material, remaining piece value is evaluated as a ratio
 
         # converts ratio from piece_value : opposing_piece_value
-        # to adjusted_piece_value : 1, where a high
+        # to adjusted_piece_value : 10, where a high
         # adjusted_piece_value is favourable
-        white_adjusted_piece_value = (
-            self.total_white_value / self.total_black_value)
-        black_adjusted_piece_value = (
-            self.total_black_value / self.total_white_value)
-        if real:
-            print(
-                "White adjusted piece value ",
-                white_adjusted_piece_value
+        if player_white:
+            adjusted_piece_value = (
+                10 * self.total_white_value / self.total_black_value
             )
-            print(
-                "Black adjusted piece value ",
-                black_adjusted_piece_value
+            if real:
+                print(
+                    "White adjusted piece value ",
+                    adjusted_piece_value
+                )
+        else:
+            adjusted_piece_value = (
+                -10 * self.total_black_value / self.total_white_value
             )
+            if real:
+                print(
+                    "Black adjusted piece value ",
+                    adjusted_piece_value
+                )
 
         # determines the total value of board control
         white_board_control_value = 0
-        black_board_control_value = 0
+        black_board_control_value = -0
         #self.all_available_moves_white
         #self.all_available_moves_black
         return (
-            0,
-            white_adjusted_piece_value,
-            black_adjusted_piece_value,
-            white_board_control_value,
-            black_board_control_value
+            adjusted_piece_value
         )
