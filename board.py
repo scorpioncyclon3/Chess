@@ -318,7 +318,6 @@ class Board:
                         # if the piece is a king, track its position
                         if isinstance(piece, King):
                             black_king_pos = (x,y)
-
         # finds out whether either kings can currently be taken by
         # a piece of the opposite colour
         # if an error occurs, their king has been taken during a
@@ -329,16 +328,15 @@ class Board:
         except:
             white_in_check = True
         try:
-            black_in_check = white_king_pos in self.all_available_moves_white
+            black_in_check = black_king_pos in self.all_available_moves_white
         except:
             black_in_check = True
-        
         return(white_in_check, black_in_check)
 
     def remove_illegal_moves_from_piece_set(self, x, y):
         # removes illegal moves from a piece's set
         available_moves = self.get_board()[y][x].get_available_moves()
-        player = self.get_board()[y][x].get_player()
+        piece_player = self.get_board()[y][x].get_player()
         to_remove = set()
         for move in available_moves:
             # copies the self to simulate moves with
@@ -355,15 +353,17 @@ class Board:
             )
             # if it moves the player into check
             if (
-                (player and white_king_in_check)
-                or (not player and black_king_in_check)
+                (piece_player and white_king_in_check)
+                or (not piece_player and black_king_in_check)
             ):
                 # tracks the illegality of the move
                 to_remove.add((move[0],move[1]))
         # removes the illegal moves
         for move in to_remove:
             available_moves.remove(move)
-        if len(available_moves): print(x, y, available_moves)
+        # DEBUG
+        if len(available_moves): print(f"({x}, {y}) legal moves: {available_moves}")
+        else: print(f"No legal moves for ({x}, {y})")
         return available_moves
 
     def check_for_checkmate(self, player):
@@ -379,22 +379,19 @@ class Board:
                 ):
                     # gets the true set of available moves for it
                     try:
-                        true_available_moves_piece = (
+                        true_available_moves_player.update(
                             self.remove_illegal_moves_from_piece_set(x, y)
                         )
-                        true_available_moves_player = (
-                            true_available_moves_player.union(
-                                true_available_moves_piece
-                        ))
                     except:
                         print("Error in checking piece", x, y)
                         self.print_state()
                         # crashes self so that error-causing board states can
                         # be identified and fixed
                         {0:0}[1]
+        # DEBUG
+        print(f"All legal moves for player {player}: {true_available_moves_player}")
         # returns False if the set is empty, since empty sets evaluate to False
         # and filled sets are True
-        print(true_available_moves_player)
         return(not true_available_moves_player)
 
     # TODO add stalemates
