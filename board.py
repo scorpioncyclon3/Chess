@@ -496,13 +496,14 @@ class Board:
 
         # incentivises trades to progress the game faster
         # will be worth at most 16, which is just over one and a half pawns
+        # TODO fix the fact that one player's anti-coward benefit will be a detriment for the other in the minimax search
         anti_coward_bonus_value = (
             80 - self.total_white_piece_value - self.total_black_piece_value
         ) / 5
 
         return (
-            adjusted_piece_value
+            (adjusted_piece_value
             + adjusted_board_value
-            + check_bonus_value
-            + anti_coward_bonus_value
+            + check_bonus_value,
+            anti_coward_bonus_value)
         )
