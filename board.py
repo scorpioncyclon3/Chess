@@ -9,8 +9,8 @@ from Piece_Objects.rook import Rook
 
 class Board:
     board: list[list[object]]
-    total_white_value: int
-    total_black_value: int
+    total_white_piece_value: int
+    total_black_piece_value: int
     all_available_moves_white: set()
     all_available_moves_black: set()
 
@@ -23,7 +23,7 @@ class Board:
                 self.board[-1].append(None)
 
         # tracks the total value on the board
-        self.total_white_value, self.total_black_value = 0, 0
+        self.total_white_piece_value, self.total_black_piece_value = 0, 0
         # tracks the available moves at a given point
         self.all_available_moves_white = set()
         self.all_available_moves_black = set()
@@ -41,6 +41,11 @@ class Board:
         for (player_colour, y) in ((True, 6), (False, 1)):
             for x in range(0,8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
+        # TEST
+        # gives the white player a loaded shotgun aimed directly at the black
+        # king to test whether the AI is smart enough to pull the trigger
+        #self.add_piece(Rook(True), 3, 1)
+        #self.add_piece(Rook(True), 3, 2)
 
         # loops through all positions to find the available moves for all pieces
         for y in range(0,8):
@@ -126,9 +131,9 @@ class Board:
         # adds the piece value to the total if it isn't a king
         if not isinstance(piece, King):
             if piece.player_white:
-                self.total_white_value += piece.value
+                self.total_white_piece_value += piece.value
             else:
-                self.total_black_value += piece.value
+                self.total_black_piece_value += piece.value
         # adds the piece
         self.board[y][x] = piece
 
@@ -139,19 +144,19 @@ class Board:
         if self.board[new_y][new_x] != None:
             # adds the value of it t the total
             if self.board[new_y][new_x].get_player():
-                self.total_white_value -= (
+                self.total_white_piece_value -= (
                     self.board[new_y][new_x].get_value()
                 )
                 if real:
                     print("Total white value remaining ",
-                        self.total_white_value)
+                        self.total_white_piece_value)
             else:
-                self.total_black_value -= (
+                self.total_black_piece_value -= (
                     self.board[new_y][new_x].get_value()
                 )
                 if real:
                     print("Total black value remaining ",
-                        self.total_black_value)
+                        self.total_black_piece_value)
 
         # moves the piece
         self.board[new_y][new_x] = self.board[old_y][old_x]
@@ -182,14 +187,14 @@ class Board:
             # if a white pawn reaches the top row
             if self.board[new_y][new_x].get_player() and new_y == 0:
                 # removes the pawn's value from white player's total
-                self.total_white_value -= 1
+                self.total_white_piece_value -= 1
                 # adds a white queen in it's place
                 self.add_piece(Queen(True), new_x, new_y)
                 self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
             # if a black pawn reaches the bottom row
             if not self.board[new_y][new_x].get_player() and new_y == 7:
                 # removes the pawn's value from black player's total
-                self.total_black_value -= 1
+                self.total_black_piece_value -= 1
                 # adds a black queen in it's place
                 self.add_piece(Queen(False), new_x, new_y)
                 self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
@@ -410,7 +415,7 @@ class Board:
         # adjusted_piece_value is favourable
         if player_white:
             adjusted_piece_value = (
-                10 * self.total_white_value / self.total_black_value
+                10 * self.total_white_piece_value / self.total_black_piece_value
             )
             if real:
                 print(
@@ -419,7 +424,7 @@ class Board:
                 )
         else:
             adjusted_piece_value = (
-                -10 * self.total_black_value / self.total_white_value
+                -10 * self.total_black_piece_value / self.total_white_piece_value
             )
             if real:
                 print(
@@ -430,18 +435,65 @@ class Board:
         # evaluates the total piece value of the player
         if player_white:
             adjusted_piece_value = 10 * (
-                self.total_white_value - self.total_black_value
+                self.total_white_piece_value - self.total_black_piece_value
             )
         else:
             adjusted_piece_value = 10 * (
-                self.total_black_value - self.total_white_value
+                self.total_black_piece_value - self.total_white_piece_value
             )
+
+        # adds a bonus for checking the opponent and a penalty for being in check
+        check_bonus_value = 0
+        white_king_in_check, black_king_in_check = (
+            self.check_for_check()
+        )
+        if (
+            (player_white and black_king_in_check)
+            or (not player_white and white_king_in_check)
+        ):
+            check_bonus_value += 25
+        if (
+            (player_white and white_king_in_check)
+            or (not player_white and black_king_in_check)
+        ):
+            check_bonus_value -= 25
 
         # determines the total value of board control
         white_board_control_value = 0
         black_board_control_value = -0
-        #self.all_available_moves_white
-        #self.all_available_moves_black
+        # since check_for_check was recently called, all_available_moves_white
+        # and all_available_moves_black are up to date
+        
+        # weights central tiles to be more important
+        value_dict = {
+            0:1.0,
+            1:1.2,
+            2:1.4,
+            3:1.5,
+            4:1.5,
+            5:1.4,
+            6:1.2,
+            7:1.0
+        }
+        for move in self.all_available_moves_white:
+            white_board_control_value += (
+                1
+                * value_dict[move[0]]
+                * value_dict[move[1]]
+            )
+        for move in self.all_available_moves_black:
+            black_board_control_value += (
+                1
+                * value_dict[move[0]]
+                * value_dict[move[1]]
+            )
+        if player_white:
+            adjusted_board_value = (white_board_control_value
+                - black_board_control_value)
+        else:
+            adjusted_board_value = (black_board_control_value
+                - white_board_control_value)
+
         return (
-            adjusted_piece_value
+            adjusted_piece_value + adjusted_board_value + check_bonus_value
         )
