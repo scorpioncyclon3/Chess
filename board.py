@@ -142,7 +142,7 @@ class Board:
     ):
         # if taking a piece
         if self.board[new_y][new_x] != None:
-            # adds the value of it t the total
+            # adds the value of it to the total
             if self.board[new_y][new_x].get_player():
                 self.total_white_piece_value -= (
                     self.board[new_y][new_x].get_value()
@@ -494,6 +494,15 @@ class Board:
             adjusted_board_value = (black_board_control_value
                 - white_board_control_value)
 
+        # incentivises trades to progress the game faster
+        # will be worth at most 16, which is just over one and a half pawns
+        anti_coward_bonus_value = (
+            80 - self.total_white_piece_value - self.total_black_piece_value
+        ) / 5
+
         return (
-            adjusted_piece_value + adjusted_board_value + check_bonus_value
+            adjusted_piece_value
+            + adjusted_board_value
+            + check_bonus_value
+            + anti_coward_bonus_value
         )
