@@ -362,8 +362,8 @@ class Board:
         for move in to_remove:
             available_moves.remove(move)
         # DEBUG
-        if len(available_moves): print(f"({x}, {y}) legal moves: {available_moves}")
-        else: print(f"No legal moves for ({x}, {y})")
+        #if len(available_moves): print(f"({x}, {y}) legal moves: {available_moves}")
+        #else: print(f"No legal moves for ({x}, {y})")
         return available_moves
 
     def check_for_checkmate(self, player):
@@ -389,18 +389,18 @@ class Board:
                         # be identified and fixed
                         {0:0}[1]
         # DEBUG
-        print(f"All legal moves for player {player}: {true_available_moves_player}")
+        #print(f"All legal moves for player {player}: {true_available_moves_player}")
         # returns False if the set is empty, since empty sets evaluate to False
         # and filled sets are True
         return(not true_available_moves_player)
 
     # TODO add stalemates
 
-    def evaluate_state(self, player_white, real:bool):
+    def evaluate_state(self, player_white, real:bool=False):
         # evaluates the overall state of the board for the focused player
 
         # can only be called on non-checkmate nodes, so checkmate can be ignored
-
+        """
         # to account for trading being relatively equal for both players,
         # but slightly favourable when up material and slightly adverse when
         # down material, remaining piece value is evaluated as a ratio
@@ -426,6 +426,16 @@ class Board:
                     "Black adjusted piece value ",
                     adjusted_piece_value
                 )
+        """
+        # evaluates the total piece value of the player
+        if player_white:
+            adjusted_piece_value = 10 * (
+                self.total_white_value - self.total_black_value
+            )
+        else:
+            adjusted_piece_value = 10 * (
+                self.total_black_value - self.total_white_value
+            )
 
         # determines the total value of board control
         white_board_control_value = 0
