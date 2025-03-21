@@ -65,14 +65,9 @@ class Minimax_AI_Player(Player):
                             (white_king_in_check or black_king_in_check)
                             and temp_copy.check_for_checkmate(not player)
                         ):
-                            if player:
-                                evaluations.append(
-                                    ((1, 0, 0, 0, 0), temp_copy)
-                                )
-                            else:
-                                evaluations.append(
-                                    ((-1, 0, 0, 0, 0), temp_copy)
-                                )
+                            evaluations.append(
+                                (2147483647, temp_copy)
+                            )
                         # if it at a leaf node
                         elif (
                             current_recursion_depth
@@ -80,7 +75,9 @@ class Minimax_AI_Player(Player):
                         ):
                             evaluations.append(
                                 (
-                                    temp_copy.evaluate_state(real=False),
+                                    temp_copy.evaluate_state(
+                                        self.player_white
+                                    ),
                                     temp_copy
                                 )
                             )
@@ -92,8 +89,9 @@ class Minimax_AI_Player(Player):
                                     self.really_cool_not_so_temporary_function_name(
                                         temp_copy,
                                         current_recursion_depth+1,
-                                        (not player)
-                                    )[0],
+                                        not player
+                                    )[0]
+                                    * -1,
                                     temp_copy
                                 )
                             )
@@ -113,18 +111,11 @@ class Minimax_AI_Player(Player):
         # shuffles the list in case of a tie
         random.shuffle(evaluations)
         # finds the most effective move
-        if player:
-            evaluations = sorted(
-                evaluations,
-                reverse=True,
-                key=lambda i: (i[0][0], i[0][1], i[0][3])
-            )
-        else:
-            evaluations = sorted(
-                evaluations,
-                reverse=True,
-                key=lambda i: (i[0][0]*-1, i[0][2], i[0][4])
-            )
+        # picks the highest value
+        evaluations.sort(
+            reverse=True,
+            key=lambda i: (i[0])
+        )
 
         # error protection
         if len(evaluations):
