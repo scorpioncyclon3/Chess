@@ -37,8 +37,8 @@ class Minimax_AI_Player(Player):
         # each item in evaluations will be a tuple structured as:
         # (evaluation score, neutral bonus incentive score, board state)
 
-        for y in range(0,8):
-            for x in range(0,8):
+        for y in range(8):
+            for x in range(8):
                 # if the player's piece is in that coordinate
                 if (
                     board.get_board()[y][x] != None
