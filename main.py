@@ -27,33 +27,36 @@ if single_game:
 
 # automated data collection
 else:
-    for depth in range(1,4):
-        player_1 = Minimax_AI_Player(
-            player_white=True, 
-            max_recursion_depth=depth,
-        )
-        player_2 = Minimax_AI_Player(
-            player_white=False,
-            max_recursion_depth=depth, 
-        )
-        play_game(
-            player_1,
-            player_2,
-            data_collection=True
-        )
+    for trial in range(0,5):
+        for depth in range(3,4):
+            player_1 = Minimax_AI_Player(
+                player_white=True, 
+                max_recursion_depth=depth,
+            )
+            player_2 = Minimax_AI_Player(
+                player_white=False,
+                max_recursion_depth=depth, 
+            )
+            play_game(
+                player_1,
+                player_2,
+                data_collection=True,
+                trial_name="mm-" + str(depth) + "-" + str(trial)
+            )
 
-        """
-        player_1 = Alpha_Beta_AI_Player(
-            player_white=True,
-            max_recursion_depth=depth,
-        )
-        player_2 = Alpha_Beta_AI_Player(
-            player_white=False,
-            max_recursion_depth=depth,
-        )
-        play_game(
-            player_1,
-            player_2,
-            data_collection=True
-        )
-        """
+            """
+            player_1 = Alpha_Beta_AI_Player(
+                player_white=True,
+                max_recursion_depth=depth,
+            )
+            player_2 = Alpha_Beta_AI_Player(
+                player_white=False,
+                max_recursion_depth=depth,
+            )
+            play_game(
+                player_1,
+                player_2,
+                data_collection=True,
+                trial_name="αβ-" + str(depth) + "-" + str(trial)
+            )
+            """
