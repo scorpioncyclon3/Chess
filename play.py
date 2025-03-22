@@ -69,11 +69,14 @@ def play_game(
         if data_collection and turn >= 50:
             game_running = False
 
-    # averages the turn times
+    # saves the overall summary stats for the game
     if data_collection:
+        # averages the turn times
         average_turn_time = total_turn_time / turn
-        f.write("\n\n\n")
-        f.write("Total Time - ", total_turn_time)
-        f.write("Turns - ", turn)
-        f.write("Average Time - ", average_turn_time)
+        # adds 5 empty for visual separation
+        f.write("\n\n\n\n")
+        # writes the summary variables to the file
+        f.write(f"Total Time - {str(total_turn_time)}\n")
+        f.write(f"Turns - {str(turn)}\n")
+        f.write(f"Average Time - {str(average_turn_time)}")
         f.close()
