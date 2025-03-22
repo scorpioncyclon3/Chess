@@ -32,55 +32,45 @@ else:
     experiment_num = create_data_directory()
 
     for trial in range(0,5):
-        for depth in range(2,4):
-            player_1 = Minimax_AI_Player(
-                player_white=True, 
-                max_recursion_depth=depth,
-            )
-            player_2 = Minimax_AI_Player(
-                player_white=False,
-                max_recursion_depth=depth, 
-            )
-            play_game(
-                player_1,
-                player_2,
-                data_collection=True,
-                trial_name=(
-                    "Data/"
-                    + str(experiment_num)
-                    + "/"
-                    + str(experiment_num)
-                    + "-mm-"
-                    + str(depth)
-                    + "-"
-                    + str(trial)
-                    + ".txt"
+        for depth in range(1,4):
+            #for player_type in ("mm", "αβ"):
+            for player_type in ("mm",):
+                match player_type:
+                    case "mm":
+                        player_1 = Minimax_AI_Player(
+                            player_white=True, 
+                            max_recursion_depth=depth,
+                        )
+                        player_2 = Minimax_AI_Player(
+                            player_white=False,
+                            max_recursion_depth=depth, 
+                        )
+                    case "αβ":
+                        pass
+                        """
+                        player_1 = Alpha_Beta_AI_Player(
+                            player_white=True,
+                            max_recursion_depth=depth,
+                        )
+                        player_2 = Alpha_Beta_AI_Player(
+                            player_white=False,
+                            max_recursion_depth=depth,
+                        )
+                        """
+                play_game(
+                    player_1,
+                    player_2,
+                    data_collection=True,
+                    trial_name=(
+                        "Data/"
+                        + str(experiment_num)
+                        + "/"
+                        + "-".join((
+                            str(experiment_num),
+                            str(player_type),
+                            str(depth),
+                            str(trial)
+                        ))
+                        + ".txt"
+                    )
                 )
-            )
-
-            """
-            player_1 = Alpha_Beta_AI_Player(
-                player_white=True,
-                max_recursion_depth=depth,
-            )
-            player_2 = Alpha_Beta_AI_Player(
-                player_white=False,
-                max_recursion_depth=depth,
-            )
-            play_game(
-                player_1,
-                player_2,
-                data_collection=True,
-                trial_name=(
-                    "Data/"
-                    + str(experiment_num)
-                    + "/"
-                    + str(experiment_num)
-                    + "-αβ-"
-                    + str(depth)
-                    + "-"
-                    + str(trial)
-                    + ".txt"
-                )
-            )
-            """
