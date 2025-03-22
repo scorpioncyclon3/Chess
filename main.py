@@ -1,5 +1,3 @@
-import os
-
 from Player_Objects.player import Player
 from Player_Objects.manual_player import Manual_Player
 from Player_Objects.minimax_ai_player import Minimax_AI_Player
@@ -31,7 +29,7 @@ if single_game:
 # automated data collection
 else:
     # creates a new "experiment" with a folder to store its data
-    create_data_directory()
+    experiment_num = create_data_directory()
 
     for trial in range(0,5):
         for depth in range(2,4):
