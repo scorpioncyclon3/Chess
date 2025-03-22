@@ -61,25 +61,29 @@ class Board:
         return self.board
 
     def print_state(self):
+        print(self.board_to_string())
+
+    def board_to_string(self):
         mode = "text"
         mode = "icon"
         print('Board:')
         if mode == "text": print("   AA BB CC DD EE FF GG HH")
         elif mode == "icon": print("  A B C D E F G H")
+        board_str = ""
         # loops through each row
         for y in range(0,8):
             # tracks the row as a string
-            if mode == "text": row_str = "0"+str(8-y)
-            elif mode == "icon": row_str = str(8-y)
+            if mode == "text": board_str += "0"+str(8-y)
+            elif mode == "icon": board_str += str(8-y)
             # loops through
             for x in range(0,8):
                 # adds spaces between characters
-                row_str += " "
+                board_str += " "
 
                 # empty space
                 if self.board[y][x] is None:
-                    if mode == "text": row_str += "--"
-                    elif mode == "icon": row_str += "-"
+                    if mode == "text": board_str += "--"
+                    elif mode == "icon": board_str += "-"
                 else:
                     # adds the piece colour
                     if self.board[y][x].player_white:
@@ -123,9 +127,9 @@ class Board:
                                 case "icon": piece_str += 6
                     # if in icon mode, convert from int to unicode char
                     if mode == "icon": piece_str = chr(piece_str)
-                    row_str += piece_str
-            print(row_str)
-        print("")
+                    board_str += piece_str
+            board_str += "\n"
+        return board_str
 
     def add_piece(self, piece:object, x:int, y:int):
         # adds the piece value to the total if it isn't a king
