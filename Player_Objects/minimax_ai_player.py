@@ -25,7 +25,7 @@ class Minimax_AI_Player(Player):
         results = self.really_cool_not_so_temporary_function_name(
             board, 0, self.get_player()
         )
-        board = deepcopy(results[1])
+        board = deepcopy(results[2])
         end_time = time.perf_counter()
         print("Time taken:", end_time - start_time)
         return board
@@ -34,6 +34,8 @@ class Minimax_AI_Player(Player):
         self, board, current_recursion_depth, player
     ):
         evaluations = []
+        # each item in evaluations will be a tuple structured as:
+        # (evaluation score, neutral bonus incentive score, board state)
 
         for y in range(0,8):
             for x in range(0,8):
@@ -65,39 +67,55 @@ class Minimax_AI_Player(Player):
                             (white_king_in_check or black_king_in_check)
                             and temp_copy.check_for_checkmate(not player)
                         ):
-                            if player:
-                                evaluations.append(
-                                    ((1, 0, 0, 0, 0), temp_copy)
-                                )
-                            else:
-                                evaluations.append(
-                                    ((-1, 0, 0, 0, 0), temp_copy)
-                                )
+                            evaluations.append(
+                                (2147483647, 0, temp_copy)
+                            )
                         # if it at a leaf node
                         elif (
                             current_recursion_depth
                             == self.max_recursion_depth
                         ):
+                            evaluation = temp_copy.evaluate_state(
+                                self.player_white
+                            )
                             evaluations.append(
+                                # (
+                                # evaluation score,
+                                # neutral bonus incentive score,
+                                # board state
+                                # )
                                 (
-                                    temp_copy.evaluate_state(real=False),
+                                    evaluation[0]+evaluation[1],
+                                    evaluation[1],
                                     temp_copy
                                 )
                             )
                         # if it is not a leaf node, continue recursing
                         # then use the selected leaf node's value
                         else:
+                            # gets the best-case value
+                            leaf_val = self.really_cool_not_so_temporary_function_name(
+                                temp_copy,
+                                current_recursion_depth+1,
+                                not player
+                            )
+                            # adds it to evaluations after inverting the score
                             evaluations.append(
                                 (
-                                    self.really_cool_not_so_temporary_function_name(
-                                        temp_copy,
-                                        current_recursion_depth+1,
-                                        (not player)
-                                    )[0],
+                                    # the highest guaranteed leaf node score
+                                    leaf_val[0]
+                                    # multiplied by negative 1
+                                    * -1
+                                    # plus double the neutral incentives
+                                    # to account for the *-1
+                                    + 2 * leaf_val[1],
+                                    # the neutral bonus incentive score
+                                    leaf_val[1],
+                                    # the board state
                                     temp_copy
                                 )
                             )
-        # if child nodes are error-causing, print current state
+        # if child nodes are error-causing, print current state for debugging
         if len(evaluations) != len(
             list(filter(
                 lambda i: (i[0] != "Error"),
@@ -113,18 +131,11 @@ class Minimax_AI_Player(Player):
         # shuffles the list in case of a tie
         random.shuffle(evaluations)
         # finds the most effective move
-        if player:
-            evaluations = sorted(
-                evaluations,
-                reverse=True,
-                key=lambda i: (i[0][0], i[0][1], i[0][3])
-            )
-        else:
-            evaluations = sorted(
-                evaluations,
-                reverse=True,
-                key=lambda i: (i[0][0]*-1, i[0][2], i[0][4])
-            )
+        # picks the highest value
+        evaluations.sort(
+            reverse=True,
+            key=lambda i: (i[0])
+        )
 
         # error protection
         if len(evaluations):
@@ -134,4 +145,4 @@ class Minimax_AI_Player(Player):
             # returns an error, layer above should ignore this move
             print("No available moves in simulation")
             board.print_state()
-            return(("Error", board))
+            return(("Error", 0, board))
