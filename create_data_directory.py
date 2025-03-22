@@ -1,3 +1,5 @@
+import os
+
 def create_data_directory():
     # creates a new "experiment"
     # creates the Data folder with a default subfolder of 0 and an
@@ -7,6 +9,8 @@ def create_data_directory():
         f = open("Data/experiment_count.txt", "w")
         f.write("0")
         f.close()
+
+    # determines the next free experiment ID number, with the default of 0
     try:
         # increments the experimental counter
         f = open("Data/experiment_count.txt", "r")
@@ -27,6 +31,9 @@ def create_data_directory():
             f.close()
         except:
             print("Error in recreating Data/experiment_count.txt, please resolve issue")
+
     # creates a subfolder for the experiment if it doesn't exist
     if not os.path.exists(f"Data/{experiment_num}"):
         os.makedirs(f"Data/{experiment_num}")
+
+    return experiment_num
