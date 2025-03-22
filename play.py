@@ -48,7 +48,7 @@ def play_game(
         # records the turn if it is a real trial
         if data_collection:
             f.write(f"Turn #{str(turn)}\n")
-            f.write(f"Time - {str(total_turn_time)}\n")
+            f.write(f"Time - {str(turn_time)}\n")
             f.write(board.board_to_string() + "\n")
 
         # switches turn
