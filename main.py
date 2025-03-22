@@ -1,7 +1,7 @@
 from Player_Objects.player import Player
 from Player_Objects.manual_player import Manual_Player
 from Player_Objects.minimax_ai_player import Minimax_AI_Player
-from play_game import play_game
+from play import play_game
 
 single_game = False
 #single_game = True
