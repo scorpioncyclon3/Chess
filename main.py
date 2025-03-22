@@ -1,7 +1,10 @@
+import os
+
 from Player_Objects.player import Player
 from Player_Objects.manual_player import Manual_Player
 from Player_Objects.minimax_ai_player import Minimax_AI_Player
 from play import play_game
+from create_data_directory import create_data_directory
 
 single_game = False
 #single_game = True
@@ -27,8 +30,11 @@ if single_game:
 
 # automated data collection
 else:
+    # creates a new "experiment" with a folder to store its data
+    create_data_directory()
+
     for trial in range(0,5):
-        for depth in range(3,4):
+        for depth in range(2,4):
             player_1 = Minimax_AI_Player(
                 player_white=True, 
                 max_recursion_depth=depth,
@@ -41,7 +47,17 @@ else:
                 player_1,
                 player_2,
                 data_collection=True,
-                trial_name="mm-" + str(depth) + "-" + str(trial)
+                trial_name=(
+                    "Data/"
+                    + str(experiment_num)
+                    + "/"
+                    + str(experiment_num)
+                    + "-mm-"
+                    + str(depth)
+                    + "-"
+                    + str(trial)
+                    + ".txt"
+                )
             )
 
             """
@@ -57,6 +73,16 @@ else:
                 player_1,
                 player_2,
                 data_collection=True,
-                trial_name="αβ-" + str(depth) + "-" + str(trial)
+                trial_name=(
+                    "Data/"
+                    + str(experiment_num)
+                    + "/"
+                    + str(experiment_num)
+                    + "-αβ-"
+                    + str(depth)
+                    + "-"
+                    + str(trial)
+                    + ".txt"
+                )
             )
             """
