@@ -3,7 +3,7 @@ from Player_Objects.player import Player
 from Player_Objects.manual_player import Manual_Player
 from Player_Objects.minimax_ai_player import Minimax_AI_Player
 
-def play_game(player_1: Player, player_2: Player):
+def play_game(player_1: Player, player_2: Player, data_collection: bool = False):
     player_1_turn = True
     board = Board()
     game_running = True
