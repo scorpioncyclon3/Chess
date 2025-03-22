@@ -11,15 +11,15 @@ class Board:
     board: list[list[object]]
     total_white_piece_value: int
     total_black_piece_value: int
-    all_available_moves_white: set()
-    all_available_moves_black: set()
+    all_available_moves_white: set[tuple[int, int]]
+    all_available_moves_black: set[tuple[int, int]]
 
     def __init__(self):
         # create board
         self.board = []
-        for i in range(0,8):
+        for i in range(8):
             self.board.append([])
-            for j in range(0,8):
+            for j in range(8):
                 self.board[-1].append(None)
 
         # tracks the total value on the board
@@ -39,7 +39,7 @@ class Board:
             self.add_piece(Knight(player_white=player_colour), 1, y)
             self.add_piece(Knight(player_white=player_colour), 6, y)
         for (player_colour, y) in ((True, 6), (False, 1)):
-            for x in range(0,8):
+            for x in range(8):
                 self.add_piece(Pawn(player_white=player_colour), x, y)
         # TEST
         # gives the white player a loaded shotgun aimed directly at the black
@@ -48,8 +48,8 @@ class Board:
         #self.add_piece(Rook(True), 3, 2)
 
         # loops through all positions to find the available moves for all pieces
-        for y in range(0,8):
-            for x in range(0,8):
+        for y in range(8):# TODO change to "range(8)"
+            for x in range(8):
                 # if the space is not empty, fill its available moves set
                 if self.get_board()[y][x] is not None:
                     # updates the piece's available_moves set
@@ -71,12 +71,12 @@ class Board:
         elif mode == "icon": print("  A B C D E F G H")
         board_str = ""
         # loops through each row
-        for y in range(0,8):
+        for y in range(8):
             # tracks the row as a string
             if mode == "text": board_str += "0"+str(8-y)
             elif mode == "icon": board_str += str(8-y)
             # loops through
-            for x in range(0,8):
+            for x in range(8):
                 # adds spaces between characters
                 board_str += " "
 
@@ -196,7 +196,7 @@ class Board:
                 self.add_piece(Queen(True), new_x, new_y)
                 self.board[new_y][new_x].find_available_moves(self, new_x, new_y)
             # if a black pawn reaches the bottom row
-            if not self.board[new_y][new_x].get_player() and new_y == 7:
+            if not self.board[new_y][new_x].get_player() and new_y == 7:# TODO fix
                 # removes the pawn's value from black player's total
                 self.total_black_piece_value -= 1
                 # adds a black queen in it's place
@@ -303,8 +303,8 @@ class Board:
         self.all_available_moves_white = set()
         self.all_available_moves_black = set()
         #loops through all positions
-        for y in range(0,8):
-            for x in range(0,8):
+        for y in range(8):
+            for x in range(8):
                 # if the space is not empty, add its available moves
                 # to all_available_moves
                 if self.get_board()[y][x] is not None:
@@ -379,8 +379,8 @@ class Board:
         # tracks the true set of available moves
         true_available_moves_player = set()
         # loops through each piece
-        for y in range(0,8):
-            for x in range(0,8):
+        for y in range(8):
+            for x in range(8):
                 # piece owned by the player being checked in location
                 if (
                     self.get_board()[y][x] is not None
@@ -500,7 +500,6 @@ class Board:
 
         # incentivises trades to progress the game faster
         # will be worth at most 16, which is just over one and a half pawns
-        # TODO fix the fact that one player's anti-coward benefit will be a detriment for the other in the minimax search
         anti_coward_bonus_value = (
             80 - self.total_white_piece_value - self.total_black_piece_value
         ) / 5
