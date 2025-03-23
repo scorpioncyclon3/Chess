@@ -99,46 +99,39 @@ class Minimax_AI_Player(Player):
                                 current_recursion_depth+1,
                                 not player
                             )
-                            # adds it to evaluations after inverting the score
-                            evaluations.append(
-                                (
-                                    # the highest guaranteed leaf node score
-                                    leaf_val[0]
-                                    # multiplied by negative 1
-                                    * -1
-                                    # plus double the neutral incentives
-                                    # to account for the *-1
-                                    + 2 * leaf_val[1],
-                                    # the neutral bonus incentive score
-                                    leaf_val[1],
-                                    # the board state
-                                    temp_copy
+                            # error protection
+                            if leaf_val[0] != "Error":
+                                # adds it to evaluations after inverting the score
+                                evaluations.append(
+                                    (
+                                        # the highest guaranteed leaf node score
+                                        leaf_val[0]
+                                        # multiplied by negative 1
+                                        * -1
+                                        # plus double the neutral incentives
+                                        # to account for the *-1
+                                        + 2 * leaf_val[1],
+                                        # the neutral bonus incentive score
+                                        leaf_val[1],
+                                        # the board state
+                                        temp_copy
+                                    )
                                 )
-                            )
-        # if child nodes are error-causing, print current state for debugging
-        if len(evaluations) != len(
-            list(filter(
-                lambda i: (i[0] != "Error"),
-                evaluations
-            ))
-        ):
-            board.print_state()
-        # removes all error-causing board states
-        evaluations = list(filter(
-            lambda i: (i[0] != "Error"),
-            evaluations
-        ))
-        # shuffles the list in case of a tie
-        random.shuffle(evaluations)
-        # finds the most effective move
-        # picks the highest value
-        evaluations.sort(
-            reverse=True,
-            key=lambda i: (i[0])
-        )
+                            # if child nodes are error-causing, print current state for debugging
+                            else:
+                                print("Child boards cause errors")
+                                board.print_state()
 
         # error protection
         if len(evaluations):
+            # shuffles the list in case of a tie
+            random.shuffle(evaluations)
+            # finds the most effective move
+            # picks the highest value
+            evaluations.sort(
+                reverse=True,
+                key=lambda i: (i[0])
+            )        
             # returns the best item
             return evaluations[0]
         else:
