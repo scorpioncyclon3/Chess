@@ -16,7 +16,6 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
         self, board, current_recursion_depth, player,
         alpha=-2147483647, beta=2147483647
     ):
-        print(current_recursion_depth, alpha, beta)
         # each item in evaluations will be a tuple structured as:
         # (evaluation score, neutral bonus incentive score, board state)
         evaluations = []
@@ -117,9 +116,10 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
                 )
             )
         # if child nodes are error-causing, print current state for debugging
-        elif leaf_val[0] == "Error":
-            print("Child boards cause errors")
-            board.print_state()
+        # TODO resolve errors
+        #elif leaf_val[0] == "Error":
+            #print("Child boards cause errors")
+            #board.print_state()
         return(evaluations)
 
     def pick_best_move(self, evaluations, board):
@@ -142,6 +142,7 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
             return evaluations[0]
         else:
             # returns an error, layer above should ignore this move
-            print("No available moves in simulation")
-            board.print_state()
+            # TODO resolve errors
+            #print("No available moves in simulation")
+            #board.print_state()
             return(("Error", 0, board))
