@@ -88,7 +88,7 @@ class Minimax_AI_Player(Player):
         # then use the selected leaf node's value
         else:
             evaluations = self.minimax_branch_node(
-                evaluations, temp_copy, player, current_recursion_depth
+                evaluations, board, temp_copy, player, current_recursion_depth
             )
         return(evaluations)
 
@@ -109,7 +109,7 @@ class Minimax_AI_Player(Player):
         return(evaluations)
     
     def minimax_branch_node(
-        self, evaluations, temp_copy, player, current_recursion_depth
+        self, evaluations, board, temp_copy, player, current_recursion_depth
     ):
         # gets the best-case value
         leaf_val = self.minimax_move_selection(
