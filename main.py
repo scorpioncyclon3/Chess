@@ -38,8 +38,7 @@ else:
 
     for trial in range(0,5):
         for depth in range(1,4):
-            #for player_type in ("mm", "αβ"):
-            for player_type in ("mm",):
+            for player_type in ("mm", "αβ"):
                 match player_type:
                     case "mm":
                         player_1 = Minimax_AI_Player(
