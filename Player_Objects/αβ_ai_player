@@ -16,6 +16,7 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
         self, board, current_recursion_depth, player,
         alpha=-2147483647, beta=2147483647
     ):
+        print(current_recursion_depth, alpha, beta)
         # each item in evaluations will be a tuple structured as:
         # (evaluation score, neutral bonus incentive score, board state)
         evaluations = []
@@ -36,7 +37,14 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
                             move, current_recursion_depth,
                             alpha, beta
                         )
-        return(self.pick_best_move(evaluations))
+                        # alpha beta pruning
+                        # if the score is greater than alpha, change alpha to be the score
+                        if evaluations and evaluations[-1][0] > alpha:
+                            alpha = evaluations[-1][0]
+                        # cut off condition
+                        if alpha >= beta:
+                            return(("Prune", 0, board))
+        return(self.pick_best_move(evaluations, board))
 
     def minimamx_move(
         self, evaluations, board, player, x, y, move, current_recursion_depth,
@@ -73,14 +81,14 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
         # then use the selected leaf node's value
         else:
             evaluations = self.minimax_branch_node(
-                evaluations, temp_copy, player, current_recursion_depth,
+                evaluations, board, temp_copy, player, current_recursion_depth,
                 alpha, beta
             )
         return(evaluations)
 
     
     def minimax_branch_node(
-        self, evaluations, temp_copy, player, current_recursion_depth,
+        self, evaluations, board, temp_copy, player, current_recursion_depth,
         alpha, beta
     ):
         # gets the best-case value
@@ -92,39 +100,36 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
             beta * -1,
             alpha * -1
         )
-        # error protection
-        if leaf_val[0] != "Error":
+        # ignores pruned nodes & error protection
+        if leaf_val[0] != "Prune" and leaf_val[0] != "Error":
             # inverts the evaluation score
             # plus double the neutral incentives to account for the *-1
             inverted_val = (leaf_val[0] * -1) + (2 * leaf_val[1])
-            # alpha beta pruning
-            # if the score is greater than alpha, change alpha to be the score
-            if inverted_val > alpha:
-                alpha = leaf_val[0]
-            # cut off condition
-            if alpha >= beta:
-                pass#evaluations.append(("Prune", 0, board))
-            else:
-                # adds it to evaluations after inverting the score
-                evaluations.append(
-                    (
-                        # the highest guaranteed leaf node score
-                        inverted_val,
-                        # the neutral bonus incentive score
-                        leaf_val[1],
-                        # the board state
-                        temp_copy
-                    )
+            # adds it to evaluations after inverting the score
+            evaluations.append(
+                (
+                    # the highest guaranteed leaf node score
+                    inverted_val,
+                    # the neutral bonus incentive score
+                    leaf_val[1],
+                    # the board state
+                    temp_copy
                 )
+            )
         # if child nodes are error-causing, print current state for debugging
-        else:
+        elif leaf_val[0] == "Error":
             print("Child boards cause errors")
             board.print_state()
         return(evaluations)
 
-    def pick_best_move(self, evaluations):
+    def pick_best_move(self, evaluations, board):
         # error protection
         if len(evaluations):
+            # filters out pruned states
+            evaluations = list(filter(
+                lambda i: (i[0] != "Pruned"),
+                evaluations
+            ))
             # shuffles the list in case of a tie
             random.shuffle(evaluations)
             # finds the most effective move
@@ -132,7 +137,7 @@ class Alpha_Beta_AI_Player(Minimax_AI_Player):
             evaluations.sort(
                 reverse=True,
                 key=lambda i: (i[0])
-            )        
+            )
             # returns the best item
             return evaluations[0]
         else:
