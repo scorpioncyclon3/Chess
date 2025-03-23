@@ -33,7 +33,7 @@ class Unlimited_Movement_Piece(Piece):
             checking_x += direction[0]
             checking_y += direction[1]
             # if at the board boundaries, stop checking this direction
-            if not 0 <= checking_x <= 7 or not 0 <= checking_y <= 7:
+            if not (0 <= checking_x <= 7) or not (0 <= checking_y <= 7):
                 end_reached = True
 
             if not end_reached:
