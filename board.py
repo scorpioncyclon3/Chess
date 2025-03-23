@@ -48,7 +48,7 @@ class Board:
         #self.add_piece(Rook(True), 3, 2)
 
         # loops through all positions to find the available moves for all pieces
-        for y in range(8):# TODO change to "range(8)"
+        for y in range(8):
             for x in range(8):
                 # if the space is not empty, fill its available moves set
                 if self.get_board()[y][x] is not None:
