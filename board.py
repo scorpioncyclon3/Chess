@@ -396,7 +396,8 @@ class Board:
                         self.print_state()
                         # crashes self so that error-causing board states can
                         # be identified and fixed
-                        {0:0}[1]
+                        # TODO fix
+                        #{0:0}[1]
         # DEBUG
         #print(f"All legal moves for player {player}: {true_available_moves_player}")
         # returns False if the set is empty, since empty sets evaluate to False
