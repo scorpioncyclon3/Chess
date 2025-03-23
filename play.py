@@ -4,6 +4,7 @@ from board import Board
 from Player_Objects.player import Player
 from Player_Objects.manual_player import Manual_Player
 from Player_Objects.minimax_ai_player import Minimax_AI_Player
+from Player_Objects.αβ_ai_player import Alpha_Beta_AI_Player
 
 def play_game(
     player_1: Player,
