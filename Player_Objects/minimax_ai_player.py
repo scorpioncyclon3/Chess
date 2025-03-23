@@ -52,7 +52,7 @@ class Minimax_AI_Player(Player):
                             evaluations, board, player, x, y,
                             move, current_recursion_depth
                         )
-        return(self.pick_best_move(evaluations))
+        return(self.pick_best_move(evaluations, board))
 
     def minimamx_move(
         self, evaluations, board, player, x, y, move, current_recursion_depth
@@ -141,7 +141,7 @@ class Minimax_AI_Player(Player):
             board.print_state()
         return(evaluations)
 
-    def pick_best_move(self, evaluations):
+    def pick_best_move(self, evaluations, board):
         # error protection
         if len(evaluations):
             # shuffles the list in case of a tie
@@ -151,7 +151,7 @@ class Minimax_AI_Player(Player):
             evaluations.sort(
                 reverse=True,
                 key=lambda i: (i[0])
-            )        
+            )
             # returns the best item
             return evaluations[0]
         else:
