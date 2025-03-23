@@ -61,11 +61,10 @@ class Board:
         return self.board
 
     def print_state(self):
-        print(self.board_to_string())
+        print(self.board_to_string("icon"))
 
-    def board_to_string(self):
-        mode = "text"
-        mode = "icon"
+    def board_to_string(self, mode="text"):
+        # mode: "text" or "icon"
         print('Board:')
         if mode == "text": print("   AA BB CC DD EE FF GG HH")
         elif mode == "icon": print("  A B C D E F G H")
