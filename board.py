@@ -61,11 +61,10 @@ class Board:
         return self.board
 
     def print_state(self):
-        print(self.board_to_string())
+        print(self.board_to_string("icon"))
 
-    def board_to_string(self):
-        mode = "text"
-        mode = "icon"
+    def board_to_string(self, mode="text"):
+        # mode: "text" or "icon"
         print('Board:')
         if mode == "text": print("   AA BB CC DD EE FF GG HH")
         elif mode == "icon": print("  A B C D E F G H")
@@ -396,7 +395,8 @@ class Board:
                         self.print_state()
                         # crashes self so that error-causing board states can
                         # be identified and fixed
-                        {0:0}[1]
+                        # TODO fix
+                        #{0:0}[1]
         # DEBUG
         #print(f"All legal moves for player {player}: {true_available_moves_player}")
         # returns False if the set is empty, since empty sets evaluate to False
